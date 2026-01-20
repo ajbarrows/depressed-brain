@@ -1,1 +1,11 @@
 .Rproj.user
+
+data
+
+# Data files - ignore contents but keep directory structure
+# Data
+data/**
+!data/**/
+
+# also keep all .gitkeep files
+!.gitkeep

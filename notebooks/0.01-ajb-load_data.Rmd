@@ -1,0 +1,68 @@
+
+```{r}
+library(dplyr)
+
+data_path <- "./data/raw/"
+processed_path <- "./data/raw/"
+```
+
+```{r}
+repeated_tables <- list(
+    "mr_y_smri__vol__aseg" = c(
+        "mr_y_smri__vol__aseg__ag__lh_sum",
+        "mr_y_smri__vol__aseg__ag__rh_sum",
+        "mr_y_smri__vol__aseg__hc__lh_sum",
+        "mr_y_smri__vol__aseg__hc__rh_sum"
+        ),
+    "mr_y_qc__incl" = c("mr_y_qc__incl__smri__t1_indicator"),
+    "le_l_prenatal" = c(
+        "le_l_prenatal__addr1__no2_mean",
+        "le_l_prenatal__addr1__pm25_mean",
+        "le_l_prenatal__addr1__o3_mean"
+    ),
+    "mh_p_asr" = c(
+        "mh_p_asr__synd__int_sum",
+        "mh_p_asr__synd__anxdep_sum"
+    ),
+    "ab_g_dyn" = c(
+        "ab_g_dyn__visit_age",
+        "ab_g_dyn__design_site"
+    ),
+    "mh_p_cbcl" = c(
+        "mh_p_cbcl__synd__attn_sum",
+        "mh_p_cbcl__synd__anxdep_sum",
+        "mh_p_cbcl__synd__int_sum"
+    )
+)
+
+
+single_tpt_tables <- list(
+    "ab_g_stc" = c(
+        "ab_g_stc__cohort_sex",
+        "ab_g_stc__design_id__fam"
+        )
+    )
+
+repeated_key <- c("participant_id", "session_id")
+single_tpt_key <- "participant_id"
+
+```
+
+
+```{r}
+load_and_join <- function(variables, key) {
+  tables <- purrr::imap(variables, ~ {
+    fpath <- paste0(data_path, .y, ".parquet")
+    arrow::read_parquet(fpath, col_select = c(key, .x))
+  })
+  
+  purrr::reduce(tables, dplyr::left_join, by = key)
+}
+
+df <- load_and_join(repeated_tables, repeated_key) %>%
+    left_join(
+        load_and_join(single_tpt_tables, single_tpt_key),
+        by = "participant_id"
+    )
+```
+

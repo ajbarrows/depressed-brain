@@ -9,7 +9,6 @@ cd depressed-brain
 ```
 
 ### 2. Set up R environment
-- Open `depressed-brain.Rproj` in RStudio
 - Run: `renv::restore()` (this installs all required packages)
 
 ### 3. Initialize project data
