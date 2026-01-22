@@ -11,46 +11,63 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 
 # can't install devtools
-install.packages("devtools")
+# install.packages("devtools")
 library(devtools)
-devtools::install_github("jcbeer/longCombat")
+# devtools::install_github("jcbeer/longCombat")
+# 
+# 
+# install.packages("NBDCtools")
+# install.packages("NBDCtoolsData", repos = "https://nbdc-datahub.r-universe.dev")
 
-install.packages("NBDCtools")
-install.packages("NBDCtoolsData", repos = "https://nbdc-datahub.r-universe.dev")
 
+```
 
-library(dplyr)
-library(ggplot2)
+```{r}
+
+# library(dplyr)
+# library(ggplot2)
 library(longCombat)
 
-library(NBDCtools)
+# library(NBDCtools)
+```
+
+
+```{r}
+# dir_abcd <- "depressed-brain/data/raw/"
+# 
+# subcortical_data <- create_dataset_abcd(
+#   dir = dir_abcd,
+#   vars = c(
+#     "ab_g_dyn__visit_age",
+#     "ab_g_stc__cohort_sex",
+#     "mr_y_qc__incl__smri__t1_indicator",
+#     "mr_y_adm__info__dev_serial",
+#     "mr_y_smri__vol__aseg__ag__lh_sum",
+#     "mr_y_smri__vol__aseg__ag__rh_sum",
+#     "mr_y_smri__vol__aseg__hc__lh_sum",
+#     "mr_y_smri__vol__aseg__hc__rh_sum"
+#   )
+# )
+
+load_subcortical_data <- function(fpath) {
+  arrow::read_parquet(fpath) |>
+    tidyr::drop_na()
+}
+
+
+
 ```
 
 ```{r}
-dir_abcd <- "~/depressed-brain/data/raw/"
+# included_data <- subcortical_data %>% 
+#   filter(mr_y_qc__incl__smri__t1_indicator == 1) %>% 
+#   filter(!is.na(mr_y_smri__vol__aseg__ag__rh_sum)) %>%  # remove the 8 participant-timepoints that have missing data (even though they were recommended?)
+#   mutate(mr_y_adm__info__dev_serial = as.factor(mr_y_adm__info__dev_serial))  %>%  # convert MRI serial number to factor for longComBat
+#   select(-mr_y_qc__incl__smri__t1_indicator)
 
-subcortical_data <- create_dataset_abcd(
-  dir = dir_abcd,
-  vars = c(
-    "ab_g_dyn__visit_age",
-    "ab_g_stc__cohort_sex",
-    "mr_y_qc__incl__smri__t1_indicator",
-    "mr_y_adm__info__dev_serial",
-    "mr_y_smri__vol__aseg__ag__lh_sum",
-    "mr_y_smri__vol__aseg__ag__rh_sum",
-    "mr_y_smri__vol__aseg__hc__lh_sum",
-    "mr_y_smri__vol__aseg__hc__rh_sum"
-
-  )
-)
-```
-
-```{r}
-included_data <- subcortical_data %>% 
-  filter(mr_y_qc__incl__smri__t1_indicator == 1) %>% 
-  filter(!is.na(mr_y_smri__vol__aseg__ag__rh_sum)) %>%  # remove the 8 participant-timepoints that have missing data (even though they were recommended?)
-  mutate(mr_y_adm__info__dev_serial = as.factor(mr_y_adm__info__dev_serial))  %>%  # convert MRI serial number to factor for longComBat
-  select(-mr_y_qc__incl__smri__t1_indicator)
+included_data <- load_subcortical_data("../data/processed/processed_tabular.parquet")
+brainname_subvolume <- c(names(included_data)[6:9])
+brainname_subvolume
 ```
 
 ```{r}
@@ -74,13 +91,24 @@ subvolume_combat <- longCombat(idvar='participant_id',
 # extract harmonized data
 harmonized_subcortical_volume <- subvolume_combat$data_combat
 
+subcortical_harmonized <- dplyr::left_join(
+  harmonized_subcortical_volume, 
+  included_data |> dplyr::select(-all_of(brainname_subvolume)),
+  by = c('participant_id', 'session_id', 'mr_y_adm__info__dev_serial'))
 
-subcortical_harmonized <- left_join(harmonized_subcortical_volume, subvolume, by = c('participant_id', 'session_id', 'mr_y_adm__info__dev_serial'))
 
 
 #write.csv(subcortical_harmonized,"~/Downloads/subcortical_harmonized.csv", row.names = FALSE)
 ```
 
+```{r}
+
+```
+
+
+```{r}
+
+```
 
 
 ```{r}

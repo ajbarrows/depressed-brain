@@ -10,6 +10,7 @@ repeated_tables <- list(
     "mr_y_smri__vol__aseg__hc__lh_sum",
     "mr_y_smri__vol__aseg__hc__rh_sum"
   ),
+  "mr_y_adm__info" = c("mr_y_adm__info__dev_serial"),
   "mr_y_qc__incl" = c("mr_y_qc__incl__smri__t1_indicator"),
   "le_l_prenatal" = c(
     "le_l_prenatal__addr1__no2_mean",
@@ -86,79 +87,104 @@ extract_corresponding_day <- function(df) {
       contains("dt"),
       -ab_g_dyn__visit_dtt
     ) %>%
+    rowwise() %>%
+    mutate(
+      num_visit_days = sum(!is.na(c_across(ab_g_dyn__visit__day1_dt:ab_g_dyn__visit__day4_dt)))
+    ) %>%
+    ungroup() %>%
     mutate(across(where(lubridate::is.POSIXct), lubridate::date)) %>%
     tidyr::pivot_longer(
       cols = ends_with("dt"),
       values_to = 'date',
       names_to = 'date_var'
-    )  %>%
-    filter(mh_p_asr_dtt == date) %>%
-    mutate(day = stringr::str_extract(date_var, "day\\d+")) %>%
-    select(participant_id, session_id, day)
+    ) %>%
+    filter(mh_p_asr_dtt == date | num_visit_days  == 1) %>%
+    mutate(asr_day = stringr::str_extract(date_var, "day\\d+"))
+  # select(participant_id, session_id, asr_day, date, mh_p_asr_dtt)
 }
-
 limit_to_bio_mom <- function(df, timepoint = 'ses-00A') {
 
-  asr_day <- extract_corresponding_day(df)
+  asr_admin_date <- extract_corresponding_day(df)
 
   bio_mom <- df %>%
     select(participant_id, session_id, ends_with("inform")) %>%
     tidyr::pivot_longer(
       cols = ends_with('inform')
-    ) %>%
+    )  %>%
     mutate(inform_day = stringr::str_extract(name, "day\\d+")) %>%
     left_join(
-      asr_day,
+      asr_admin_date,
       by = c("participant_id", "session_id"),
       relationship = "many-to-many"
-    ) %>%
-    filter(inform_day == day) %>%
+    )  %>%
+    #  tidyr::drop_na() %>%
+    filter(inform_day == asr_day | num_visit_days  == 1) %>%
+    distinct(participant_id, session_id, .keep_all = TRUE) %>%
     select(
       participant_id,
       session_id,
       informant = value
     ) %>%
-    filter(informant == 1) # biological mother
+    filter(informant == 1) %>% # biological mother
+    filter(session_id == timepoint)
+  # #
 
+  #
   sub <- df %>%
     right_join(bio_mom, by = c("participant_id", "session_id")) %>%
     filter(session_id == timepoint) %>%
     select(
       participant_id,
+      # session_id,
       baseline_maternal_asr_int = mh_p_asr__synd__int_sum,
       baseline_maternal_asr_anxdep = mh_p_asr__synd__anxdep_sum
     )
 
   df %>%
-    select(-c(mh_p_asr__synd__int_sum, mh_p_asr__synd__anxdep_sum)) %>%
-    right_join(sub, by = "participant_id") # limit only to those with maternal depression
+    right_join(sub, by = "participant_id")
+
 }
+
 
 format_subset <- function(df, timepoint_map, sex_map) {
   df %>%
     select(
       participant_id,
       session_id,
-      sex = ab_g_stc__cohort_sex,
-      age = ab_g_dyn__visit_age,
-      site = ab_g_dyn__design_site,
-      scanner_serial = ab_g_dyn__design_mr__serial,
-      family_id = ab_g_stc__design_id__fam,
-      anxdep = mh_p_cbcl__synd__anxdep_sum,
-      internal = mh_p_cbcl__synd__int_sum,
-      attention = mh_p_cbcl__synd__attn_sum,
-      left_amygdala_vol = mr_y_smri__vol__aseg__ag__lh_sum,
-      right_amygdala_vol = mr_y_smri__vol__aseg__ag__rh_sum,
-      left_hippocampus_vol = mr_y_smri__vol__aseg__hc__lh_sum,
-      right_hippocampus_vol = mr_y_smri__vol__aseg__hc__rh_sum,
+      # sex = ab_g_stc__cohort_sex,
+      # age = ab_g_dyn__visit_age,
+      # site = ab_g_dyn__design_site,
+      # scanner_serial = ab_g_dyn__design_mr__serial,
+      # family_id = ab_g_stc__design_id__fam,
+      # anxdep = mh_p_cbcl__synd__anxdep_sum,
+      # internal = mh_p_cbcl__synd__int_sum,
+      # attention = mh_p_cbcl__synd__attn_sum,
+      # left_amygdala_vol = mr_y_smri__vol__aseg__ag__lh_sum,
+      # right_amygdala_vol = mr_y_smri__vol__aseg__ag__rh_sum,
+      # left_hippocampus_vol = mr_y_smri__vol__aseg__hc__lh_sum,
+      # right_hippocampus_vol = mr_y_smri__vol__aseg__hc__rh_sum,
+      ab_g_stc__cohort_sex,
+      ab_g_dyn__visit_age,
+      ab_g_dyn__design_site,
+      ab_g_stc__design_id__fam,
+      mh_p_cbcl__synd__anxdep_sum,
+      mh_p_cbcl__synd__int_sum,
+      mh_p_cbcl__synd__attn_sum,
+      mr_y_smri__vol__aseg__ag__lh_sum,
+      mr_y_smri__vol__aseg__ag__rh_sum,
+      mr_y_smri__vol__aseg__hc__lh_sum,
+      mr_y_smri__vol__aseg__hc__rh_sum,
+      mr_y_adm__info__dev_serial,
       baseline_maternal_asr_int,
       baseline_maternal_asr_anxdep
     ) %>%
     mutate(
       session_id = recode(session_id, !!!timepoint_map),
-      sex = recode(sex, !!!sex_map)
+      ab_g_stc__cohort_sex = recode(ab_g_stc__cohort_sex, !!!sex_map),
+      mr_y_adm__info__dev_serial = factor(mr_y_adm__info__dev_serial)
     ) %>%
-    arrange(participant_id, session_id)
+    arrange(participant_id, session_id) %>%
+    tidyr::drop_na()
 }
 
 join_tables <- function(df, other, key = 'participant_id') {

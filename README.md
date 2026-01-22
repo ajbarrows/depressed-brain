@@ -11,7 +11,9 @@ cd depressed-brain
 ### 2. Set up R environment
 - Run: `renv::restore()` (this installs all required packages)
 
-### 3. Initialize project data
-- Run: `Rscript scripts/load_data.R`
+### 3. Load and harmonize data
+```
+Rscript scripts/load_data.R
+Rscript scripts/harmonize_data.R
+```
 
-You're ready to go!

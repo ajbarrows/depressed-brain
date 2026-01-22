@@ -8,6 +8,32 @@ df <- arrow::read_parquet(processed_path)
 ```
 
 ```{r}
+arrow::read_parquet("../data//processed/processed_tabular.parquet") %>%
+  distinct(participant_id, .keep_all = TRUE) %>%
+  count(ab_g_stc__cohort_sex)
+```
+
+
+
+```{r}
+ df %>%
+    mutate(
+      ab_g_dyn__visit__day1_dt = ab_g_dyn__visit_dtt
+    ) %>%
+    select(
+      participant_id,
+      session_id,
+      contains("dt"),
+      -ab_g_dyn__visit_dtt
+    )  %>%
+    rowwise() %>%
+    mutate(
+      num_visit_days = sum(!is.na(c_across(ab_g_dyn__visit__day1_dt:ab_g_dyn__visit__day4_dt)))
+    )
+```
+
+
+```{r}
 # figure out what day the ASR was collected
 extract_corresponding_day <- function(df) {
   df %>%
@@ -20,20 +46,35 @@ extract_corresponding_day <- function(df) {
       contains("dt"),
       -ab_g_dyn__visit_dtt
     ) %>%
+    rowwise() %>%
+    mutate(
+      num_visit_days = sum(!is.na(c_across(ab_g_dyn__visit__day1_dt:ab_g_dyn__visit__day4_dt)))
+    ) %>%
+    ungroup() %>%
     mutate(across(where(lubridate::is.POSIXct), lubridate::date)) %>%
     tidyr::pivot_longer(
       cols = ends_with("dt"),
       values_to = 'date',
       names_to = 'date_var'
-    )  %>%
-    filter(mh_p_asr_dtt == date) %>%
-    mutate(day = stringr::str_extract(date_var, "day\\d+")) %>%
-    select(participant_id, session_id, day)
+    ) %>%
+    filter(mh_p_asr_dtt == date | num_visit_days  == 1) %>%
+    mutate(asr_day = stringr::str_extract(date_var, "day\\d+"))
+    # select(participant_id, session_id, asr_day, date, mh_p_asr_dtt)
 }
 
 asr_day <- extract_corresponding_day(df)
-asr_day
+  
 
+```
+
+
+```{r}
+asr_day
+```
+
+
+```{r}
+asr_day %>% distinct(participant_id)
 ```
 
 
@@ -41,50 +82,53 @@ asr_day
 ```{r}
 limit_to_bio_mom <- function(df, timepoint = 'ses-00A') {
   
-  asr_day <- extract_corresponding_day(df)
+  asr_admin_date <- extract_corresponding_day(df)
   
   bio_mom <- df %>%
     select(participant_id, session_id, ends_with("inform")) %>%
     tidyr::pivot_longer(
       cols = ends_with('inform')
-    ) %>%
+    )  %>%
    mutate(inform_day = stringr::str_extract(name, "day\\d+")) %>%
     left_join(
-      asr_day, 
+      asr_admin_date,
       by = c("participant_id", "session_id"),
       relationship = "many-to-many"
-      ) %>%
-    filter(inform_day == day) %>%
-    select(
-      participant_id,
-      session_id,
-      informant = value
-    ) %>%
-    filter(informant == 1) # biological mother
-
-  sub <- df %>%
+    )  %>%
+   #  tidyr::drop_na() %>%
+    filter(inform_day == asr_day | num_visit_days  == 1) %>%
+    distinct(participant_id, session_id, .keep_all = TRUE) %>%
+   select(
+     participant_id,
+     session_id,
+     informant = value
+   ) %>%
+   filter(informant == 1) %>% # biological mother
+  filter(session_id == timepoint)
+    # # 
+  
+# 
+ sub <- df %>%
     right_join(bio_mom, by = c("participant_id", "session_id")) %>%
     filter(session_id == timepoint) %>%
     select(
       participant_id,
-      session_id,
+      # session_id,
       baseline_maternal_asr_int = mh_p_asr__synd__int_sum,
       baseline_maternal_asr_anxdep = mh_p_asr__synd__anxdep_sum
     )
+ 
+ df %>%
+   right_join(sub, by = "participant_id")
 
-  df %>%
-    select(-c(mh_p_asr__synd__int_sum, mh_p_asr__synd__anxdep_sum)) %>%
-    right_join(sub, by = "participant_id") # limit only to those with maternal depression
-  
-  return(df)
 }
 
 
 tmp <- limit_to_bio_mom(df)
-
+tmp
   
 ```
 ```{r}
-df
+tmp
 ```
 
