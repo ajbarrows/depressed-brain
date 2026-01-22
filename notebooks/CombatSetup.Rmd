@@ -1,0 +1,195 @@
+---
+title: "ABCD Forking Paths longComBat Setup"
+output: html_document
+date: "2026-01-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+# can't install devtools
+install.packages("devtools")
+library(devtools)
+devtools::install_github("jcbeer/longCombat")
+
+install.packages("NBDCtools")
+install.packages("NBDCtoolsData", repos = "https://nbdc-datahub.r-universe.dev")
+
+
+library(dplyr)
+library(ggplot2)
+library(longCombat)
+
+library(NBDCtools)
+```
+
+```{r}
+dir_abcd <- "~/depressed-brain/data/raw/"
+
+subcortical_data <- create_dataset_abcd(
+  dir = dir_abcd,
+  vars = c(
+    "ab_g_dyn__visit_age",
+    "ab_g_stc__cohort_sex",
+    "mr_y_qc__incl__smri__t1_indicator",
+    "mr_y_adm__info__dev_serial",
+    "mr_y_smri__vol__aseg__ag__lh_sum",
+    "mr_y_smri__vol__aseg__ag__rh_sum",
+    "mr_y_smri__vol__aseg__hc__lh_sum",
+    "mr_y_smri__vol__aseg__hc__rh_sum"
+
+  )
+)
+```
+
+```{r}
+included_data <- subcortical_data %>% 
+  filter(mr_y_qc__incl__smri__t1_indicator == 1) %>% 
+  filter(!is.na(mr_y_smri__vol__aseg__ag__rh_sum)) %>%  # remove the 8 participant-timepoints that have missing data (even though they were recommended?)
+  mutate(mr_y_adm__info__dev_serial = as.factor(mr_y_adm__info__dev_serial))  %>%  # convert MRI serial number to factor for longComBat
+  select(-mr_y_qc__incl__smri__t1_indicator)
+```
+
+```{r}
+
+#################################
+# Model: subcortical volume
+#################################
+brainname_subvolume <- c(names(included_data)[6:9])
+
+set.seed(42)
+
+subvolume_combat <- longCombat(idvar='participant_id',
+                            timevar='session_id',  # could also be smri_visitid
+                            batchvar='mr_y_adm__info__dev_serial', # should be a factor
+                            features=brainname_subvolume,
+                            formula = 'ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+                            ranef='(1|participant_id)',
+                            data=included_data)
+
+
+# extract harmonized data
+harmonized_subcortical_volume <- subvolume_combat$data_combat
+
+
+subcortical_harmonized <- left_join(harmonized_subcortical_volume, subvolume, by = c('participant_id', 'session_id', 'mr_y_adm__info__dev_serial'))
+
+
+#write.csv(subcortical_harmonized,"~/Downloads/subcortical_harmonized.csv", row.names = FALSE)
+```
+
+
+
+```{r}
+
+# Visualize site effects
+#merge with original data for comparison, add age, sex, scanner serial number back
+
+#Left Amygdala
+# check boxplot before combat
+batchBoxplot(idvar='participant_ID', 
+             batchvar='mr_y_adm__info__dev_serial', 
+             feature='mr_y_smri__vol__aseg__ag__lh_sum', 
+             formula='ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+             ranef='(1|participant_id)',
+             data=subcortical_harmonized,
+             colors=1:34,
+             orderby='var',
+             title='Left amygdala volume before ComBat')
+
+
+
+# check boxplot after combat
+batchBoxplot(idvar='participant_ID', 
+             batchvar='mr_y_adm__info__dev_serial', 
+             feature='mr_y_smri__vol__aseg__ag__lh_sum.combat', 
+             formula='ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+             ranef='(1|participant_id)',
+             data=subcortical_harmonized,
+             colors=1:34,
+             orderby='var',
+             title='Left amygdala volume after combat')
+
+#Right Amygdala
+# check boxplot before combat
+batchBoxplot(idvar='participant_ID', 
+             batchvar='mr_y_adm__info__dev_serial', 
+             feature='mr_y_smri__vol__aseg__ag__rh_sum', 
+             formula='ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+             ranef='(1|participant_id)',
+             data=subcortical_harmonized,
+             colors=1:34,
+             orderby='var',
+             title='Right amygdala volume before ComBat')
+
+
+
+# check boxplot after combat
+batchBoxplot(idvar='participant_ID', 
+             batchvar='mr_y_adm__info__dev_serial', 
+             feature='mr_y_smri__vol__aseg__ag__rh_sum.combat', 
+             formula='ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+             ranef='(1|participant_id)',
+              data=subcortical_harmonized,
+             colors=1:34,
+             orderby='var',
+             title='Right amygdala volume after combat')
+
+
+
+#Left Hippocampus
+# check boxplot before combat
+batchBoxplot(idvar='participant_ID', 
+             batchvar='mr_y_adm__info__dev_serial', 
+             feature='mr_y_smri__vol__aseg__hc__lh_sum', 
+             formula='ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+             ranef='(1|participant_id)',
+              data=subcortical_harmonized,
+             colors=1:34,
+             orderby='var',
+             title='Left hippocampus volume before ComBat')
+
+
+
+# check boxplot after combat
+batchBoxplot(idvar='participant_ID', 
+             batchvar='mr_y_adm__info__dev_serial', 
+             feature='mr_y_smri__vol__aseg__hc__lh_sum.combat', 
+             formula='ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+             ranef='(1|participant_id)',
+              data=subcortical_harmonized,
+             colors=1:34,
+             orderby='var',
+             title='Left hippocampus volume after combat')
+
+#Right Hippocampus
+# check boxplot before combat
+batchBoxplot(idvar='participant_ID', 
+             batchvar='mr_y_adm__info__dev_serial', 
+             feature='mr_y_smri__vol__aseg__hc__rh_sum', 
+             formula='ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+             ranef='(1|participant_id)',
+              data=subcortical_harmonized,
+             colors=1:34,
+             orderby='var',
+             title='Right hippocampus volume before ComBat')
+
+
+
+# check boxplot after combat
+batchBoxplot(idvar='participant_ID', 
+             batchvar='mr_y_adm__info__dev_serial', 
+             feature='mr_y_smri__vol__aseg__hc__rh_sum.combat', 
+             formula='ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+             ranef='(1|participant_id)',
+              data=subcortical_harmonized,
+             colors=1:34,
+             orderby='var',
+             title='Right hippocampus volume after combat')
+
+
+
+```
