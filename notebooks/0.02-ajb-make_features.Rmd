@@ -1,0 +1,18 @@
+---
+title: "Make Features"
+output: html_notebook
+---
+
+```{r}
+source("./R/data.R")
+```
+```{r}
+getwd()
+```
+
+```{r}
+
+df <- load_and_join(repeated_tables, repeated_key) %>%
+  join_tables(load_and_join(single_tpt_tables, single_tpt_key))
+```
+

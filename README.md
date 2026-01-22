@@ -4,7 +4,7 @@
 
 ### 1. Clone this repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/ajbarrows/depressed-brain.git
 cd depressed-brain
 ```
 
@@ -12,6 +12,6 @@ cd depressed-brain
 - Run: `renv::restore()` (this installs all required packages)
 
 ### 3. Initialize project data
-- Run: `source('R/load_data.R')`
+- Run: `Rscript scripts/load_data.R`
 
 You're ready to go!

@@ -2,67 +2,89 @@
 ```{r}
 library(dplyr)
 
-data_path <- "./data/raw/"
-processed_path <- "./data/raw/"
+# data_path <- "./data/raw/"
+processed_path <- "../data/processed/full_dataset.parquet"
+df <- arrow::read_parquet(processed_path)
 ```
 
 ```{r}
-repeated_tables <- list(
-    "mr_y_smri__vol__aseg" = c(
-        "mr_y_smri__vol__aseg__ag__lh_sum",
-        "mr_y_smri__vol__aseg__ag__rh_sum",
-        "mr_y_smri__vol__aseg__hc__lh_sum",
-        "mr_y_smri__vol__aseg__hc__rh_sum"
-        ),
-    "mr_y_qc__incl" = c("mr_y_qc__incl__smri__t1_indicator"),
-    "le_l_prenatal" = c(
-        "le_l_prenatal__addr1__no2_mean",
-        "le_l_prenatal__addr1__pm25_mean",
-        "le_l_prenatal__addr1__o3_mean"
-    ),
-    "mh_p_asr" = c(
-        "mh_p_asr__synd__int_sum",
-        "mh_p_asr__synd__anxdep_sum"
-    ),
-    "ab_g_dyn" = c(
-        "ab_g_dyn__visit_age",
-        "ab_g_dyn__design_site"
-    ),
-    "mh_p_cbcl" = c(
-        "mh_p_cbcl__synd__attn_sum",
-        "mh_p_cbcl__synd__anxdep_sum",
-        "mh_p_cbcl__synd__int_sum"
-    )
-)
-
-
-single_tpt_tables <- list(
-    "ab_g_stc" = c(
-        "ab_g_stc__cohort_sex",
-        "ab_g_stc__design_id__fam"
-        )
-    )
-
-repeated_key <- c("participant_id", "session_id")
-single_tpt_key <- "participant_id"
-
-```
-
-
-```{r}
-load_and_join <- function(variables, key) {
-  tables <- purrr::imap(variables, ~ {
-    fpath <- paste0(data_path, .y, ".parquet")
-    arrow::read_parquet(fpath, col_select = c(key, .x))
-  })
-  
-  purrr::reduce(tables, dplyr::left_join, by = key)
+# figure out what day the ASR was collected
+extract_corresponding_day <- function(df) {
+  df %>%
+    mutate(
+      ab_g_dyn__visit__day1_dt = ab_g_dyn__visit_dtt
+    ) %>%
+    select(
+      participant_id,
+      session_id,
+      contains("dt"),
+      -ab_g_dyn__visit_dtt
+    ) %>%
+    mutate(across(where(lubridate::is.POSIXct), lubridate::date)) %>%
+    tidyr::pivot_longer(
+      cols = ends_with("dt"),
+      values_to = 'date',
+      names_to = 'date_var'
+    )  %>%
+    filter(mh_p_asr_dtt == date) %>%
+    mutate(day = stringr::str_extract(date_var, "day\\d+")) %>%
+    select(participant_id, session_id, day)
 }
 
-df <- load_and_join(repeated_tables, repeated_key) %>%
+asr_day <- extract_corresponding_day(df)
+asr_day
+
+```
+
+
+
+```{r}
+limit_to_bio_mom <- function(df, timepoint = 'ses-00A') {
+  
+  asr_day <- extract_corresponding_day(df)
+  
+  bio_mom <- df %>%
+    select(participant_id, session_id, ends_with("inform")) %>%
+    tidyr::pivot_longer(
+      cols = ends_with('inform')
+    ) %>%
+   mutate(inform_day = stringr::str_extract(name, "day\\d+")) %>%
     left_join(
-        load_and_join(single_tpt_tables, single_tpt_key),
-        by = "participant_id"
+      asr_day, 
+      by = c("participant_id", "session_id"),
+      relationship = "many-to-many"
+      ) %>%
+    filter(inform_day == day) %>%
+    select(
+      participant_id,
+      session_id,
+      informant = value
+    ) %>%
+    filter(informant == 1) # biological mother
+
+  sub <- df %>%
+    right_join(bio_mom, by = c("participant_id", "session_id")) %>%
+    filter(session_id == timepoint) %>%
+    select(
+      participant_id,
+      session_id,
+      baseline_maternal_asr_int = mh_p_asr__synd__int_sum,
+      baseline_maternal_asr_anxdep = mh_p_asr__synd__anxdep_sum
     )
+
+  df %>%
+    select(-c(mh_p_asr__synd__int_sum, mh_p_asr__synd__anxdep_sum)) %>%
+    right_join(sub, by = "participant_id") # limit only to those with maternal depression
+  
+  return(df)
+}
+
+
+tmp <- limit_to_bio_mom(df)
+
+  
+```
+```{r}
+df
 ```
 

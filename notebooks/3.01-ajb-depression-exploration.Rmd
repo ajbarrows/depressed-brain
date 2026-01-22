@@ -1,0 +1,188 @@
+---
+title: "Depression Exploration"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+tmp <- arrow::read_parquet("../data/processed/full_dataset.parquet")
+```
+
+
+```{r}
+df <- arrow::read_parquet("../data/processed/processed_tabular.parquet")
+
+df
+```
+
+
+## Explore depression over time
+
+```{r}
+join_median_timepoint_age <- function(df) {
+  summary <- df %>%
+    group_by(session_id) %>%
+    summarize(median_age = median(age))
+  
+  df %>%
+    left_join(summary, by = "session_id")
+}
+
+detect_outliers <- function(df) {
+  tmp <- df %>%
+    group_by(summary_score) %>%
+    summarize(twosd = sd(value, na.rm = TRUE) * 2) %>%
+    ungroup()
+  
+  df %>%
+    left_join(tmp, by = "summary_score") %>%
+    mutate(filtered_value = ifelse(value >= twosd, NA, value))
+}
+```
+
+
+
+```{r}
+outcomes_map <- c(
+  "anxdep" = "CBCL Anxious/Depressed",
+  "internal" = "CBCL Internalizing",
+  "attention" = "CBCL Attention"
+)
+plot_cbcl_by_sex <- function(df) {
+  plot_df <- df %>%
+    join_median_timepoint_age() %>%
+    tidyr::pivot_longer(
+      cols = c(
+        anxdep,
+        internal,
+        attention
+      ),
+      names_to = 'summary_score'
+    ) %>%
+    mutate(summary_score = recode(summary_score, !!!(outcomes_map))) %>%
+    detect_outliers()
+  
+  ggplot(plot_df, aes(x = age, y = filtered_value)) +
+    geom_point(alpha = 0.01) +
+    geom_smooth(aes(color = sex)) +
+    geom_vline(
+      aes(xintercept = median_age, color = factor(median_age)),
+      linetype = "dashed") +
+    facet_wrap(~summary_score, scales='free') +
+  scale_color_discrete(
+    labels = setNames(
+      c("Baseline", "Year 2", "Year 4", "Year 6"),
+      sort(unique(plot_df$median_age))
+    )
+  ) +
+    labs(
+      color = "",
+      x = "Age (years)",
+      linetype = "Timepoint",
+      y = "Summary Scale Value",
+      caption = "CBCL values >= 2sd above the mean removed for plotting"
+    ) +
+    theme_minimal()
+}
+
+plot_cbcl_by_sex(sub)
+```
+
+
+
+```{r}
+
+library(plotly)
+plot_volume_depression <- function(df) {
+  plot_df <- df %>%
+    join_median_timepoint_age() %>%
+    tidyr::pivot_longer(
+      cols = ends_with('vol'),
+      names_to = 'structure',
+      values_to = 'volume'
+    )
+  #   tidyr::pivot_longer(
+  #     cols = c(anxdep, internal),
+  #     names_to = 'cbcl_scale',
+  #     values_to = 'cbcl_value'
+  #   )
+  # 
+  plot_df
+}
+
+plot_df <- plot_volume_depression(sub)
+plot_df
+
+# ggsave("../reports/figures/age_cbcl.pdf")
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+# plot_ly(x=temp, y=pressure, z=dtime, type="scatter3d", mode="markers", color=temp)
+# 
+# plot_ly(
+#   x=left_amygdala_vol,
+#   y=anxdep,
+#   z=age,
+#   type="scatter3d",
+#   mode="markers"
+#   
+#   
+# )
+
+
+
+# fig <- plot_ly(mtcars, x = ~wt, y = ~hp, z = ~qsec, color = ~am, colors = c('#BF382A', '#0C4B8E'))]
+fig <- plot_ly(plot_df, x = ~left_amygdala_vol, y = ~anxdep, z = ~age, type='scatter3d', mode='lines')
+# fig <- fig %>% add_markers()
+# fig <- fig %>% layout(scene = list(xaxis = list(title = 'Weight'),
+#                      yaxis = list(title = 'Gross horsepower'),
+#                      zaxis = list(title = '1/4 mile time')))
+
+fig
+
+```
+
+
+
+
+
+```{r}
+ggplot(plot_df, aes(x = age, y = filtered_value)) +
+  geom_point(alpha = 0.01) +
+  geom_smooth() +
+  geom_vline(
+    aes(xintercept = median_age, color = factor(median_age)),
+    linetype = "dashed") +
+  facet_grid(rows = vars(sex), cols = vars(summary_score)) +
+  # facet_wrap(sex~summary_score, scales='free') +
+  scale_color_discrete(
+    labels = c("Baseline", "Year 2", "Year 4", "Year 6")
+  ) +
+  labs(
+    color = "",
+    x = "Age (years)",
+    y = "Summary Scale Value"
+  ) +
+  theme_minimal() 
+
+```
+
