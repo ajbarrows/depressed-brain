@@ -5,19 +5,16 @@ output: html_notebook
 
 ```{r}
 library(ggplot2)
+library(dplyr)
 ```
 
 
 ```{r}
-tmp <- arrow::read_parquet("../data/processed/full_dataset.parquet")
-```
-
-
-```{r}
-df <- arrow::read_parquet("../data/processed/processed_tabular.parquet")
-
+df <- arrow::read_parquet("../data/processed/harmonized_tabular.parquet")
 df
 ```
+
+
 
 
 ## Explore depression over time
@@ -26,7 +23,7 @@ df
 join_median_timepoint_age <- function(df) {
   summary <- df %>%
     group_by(session_id) %>%
-    summarize(median_age = median(age))
+    summarize(median_age = median(ab_g_dyn__visit_age))
   
   df %>%
     left_join(summary, by = "session_id")
@@ -35,44 +32,60 @@ join_median_timepoint_age <- function(df) {
 detect_outliers <- function(df) {
   tmp <- df %>%
     group_by(summary_score) %>%
-    summarize(twosd = sd(value, na.rm = TRUE) * 2) %>%
+    summarize(
+      mean_summary_score = mean(value, na.rm = TRUE),
+      twosd_summary_score = sd(value, na.rm = TRUE) * 2
+      ) %>%
     ungroup()
   
   df %>%
     left_join(tmp, by = "summary_score") %>%
-    mutate(filtered_value = ifelse(value >= twosd, NA, value))
+    mutate(masked_summary_score = ifelse(
+      value > mean_summary_score + twosd_summary_score |
+        value <= mean_summary_score - twosd_summary_score,
+      NA, value))
 }
 ```
 
 
-
 ```{r}
 outcomes_map <- c(
-  "anxdep" = "CBCL Anxious/Depressed",
-  "internal" = "CBCL Internalizing",
-  "attention" = "CBCL Attention"
+  "mh_p_cbcl__synd__anxdep_sum" = "CBCL Anxious/Depressed",
+  "mh_p_cbcl__synd__int_sum" = "CBCL Internalizing",
+  "mh_p_cbcl__synd__attn_sum" = "CBCL Attention"
 )
-plot_cbcl_by_sex <- function(df) {
-  plot_df <- df %>%
+
+
+
+
+reshape_for_plotting <- function(df) {
+  df %>%
     join_median_timepoint_age() %>%
     tidyr::pivot_longer(
       cols = c(
-        anxdep,
-        internal,
-        attention
+        mh_p_cbcl__synd__anxdep_sum,
+        mh_p_cbcl__synd__int_sum,
+        # mh_p_cbcl__synd__attn_sum
       ),
       names_to = 'summary_score'
     ) %>%
     mutate(summary_score = recode(summary_score, !!!(outcomes_map))) %>%
-    detect_outliers()
-  
-  ggplot(plot_df, aes(x = age, y = filtered_value)) +
+    detect_outliers() %>%
+    select(
+      age = ab_g_dyn__visit_age,
+      sex = ab_g_stc__cohort_sex,
+     everything())
+}
+
+
+plot_cbcl_by_sex <- function(plot_df) {
+  ggplot(plot_df, aes(x = age, y = masked_summary_score)) +
     geom_point(alpha = 0.01) +
-    geom_smooth(aes(color = sex)) +
     geom_vline(
       aes(xintercept = median_age, color = factor(median_age)),
       linetype = "dashed") +
     facet_wrap(~summary_score, scales='free') +
+    geom_smooth(aes(color = sex)) +
   scale_color_discrete(
     labels = setNames(
       c("Baseline", "Year 2", "Year 4", "Year 6"),
@@ -89,100 +102,103 @@ plot_cbcl_by_sex <- function(df) {
     theme_minimal()
 }
 
-plot_cbcl_by_sex(sub)
+reshape_for_plotting(df) %>%
+  plot_cbcl_by_sex()
 ```
 
 
 
 ```{r}
 
-library(plotly)
-plot_volume_depression <- function(df) {
-  plot_df <- df %>%
-    join_median_timepoint_age() %>%
+reshaped <- reshape_for_plotting(df)
+reshaped
+
+```
+
+
+```{r}
+brain_map <- c(
+  "mr_y_smri__vol__aseg__ag__lh_sum.combat" = "Left Amygdala Volume",
+  "mr_y_smri__vol__aseg__ag__rh_sum.combat" = "Right Amygdala Volume",
+  "mr_y_smri__vol__aseg__hc__lh_sum.combat" = "Left Hippocampus Volume",
+  "mr_y_smri__vol__aseg__hc__rh_sum.combat" = "Right Hippocampus Volume"
+)
+
+reshape_for_brain_plotting <- function(reshaped) {
+  tmp <- reshaped %>%
+    select(
+      participant_id,
+      session_id,
+      age,
+      summary_score,
+      summary_score_value = value,
+      ends_with("combat"),
+      -ends_with('serial'), 
+      -contains("icv"))%>%
     tidyr::pivot_longer(
-      cols = ends_with('vol'),
+      cols = ends_with("combat"),
       names_to = 'structure',
       values_to = 'volume'
-    )
-  #   tidyr::pivot_longer(
-  #     cols = c(anxdep, internal),
-  #     names_to = 'cbcl_scale',
-  #     values_to = 'cbcl_value'
-  #   )
-  # 
-  plot_df
+    ) %>%
+    mutate(structure = recode(structure, !!!(brain_map)))
+    
+  
+  tmp %>%
+    group_by(structure) %>%
+    summarize(
+      mean_brain = mean(volume),
+      brain_twosd = sd(volume) * 2) %>%
+    right_join(tmp, by = 'structure') %>%
+    mutate(volume_masked = ifelse(
+      volume > mean_brain + brain_twosd |
+        volume <= mean_brain - brain_twosd,
+      NA, volume))
 }
 
-plot_df <- plot_volume_depression(sub)
-plot_df
+tmp <- reshape_for_brain_plotting(reshaped)
+tmp
 
-# ggsave("../reports/figures/age_cbcl.pdf")
 ```
 
 
 ```{r}
-
+ggplot(tmp, aes(x = summary_score_value)) +
+  geom_histogram() +
+  facet_wrap(~summary_score)
 ```
 
 
+```{r fig.width=12}
+plot_mh_by_brain <- function(
+    df, 
+    structure_string = 'Hippocampus', 
+    alpha = 0.25, 
+    transform = "log1p",
+    color_label = "Log Summary Score Value"){
+  df %>%
+    filter(stringr::str_detect(structure, structure_string)) %>%
+    ggplot(aes(x = age, y = volume_masked, color = summary_score_value)) +
+      geom_point(alpha = alpha) +
+      scale_color_viridis_c(transform = transform) +
+      facet_grid(
+        rows = vars(summary_score),
+        cols = vars(structure)
+      ) +
+      theme(
+        legend.position = "top",
+        legend.key.width = unit(2, "cm"),   # make legend bar wider
+        legend.text = element_text(size = 10)  # bigger text
+    ) +
+    labs(
+      color = color_label,
+      y = "Volume",
+      x = "Age (years)"
+    ) +
+    theme_minimal()
+}
 
-
-
-
-
-
-
-
-
-```{r}
-# plot_ly(x=temp, y=pressure, z=dtime, type="scatter3d", mode="markers", color=temp)
-# 
-# plot_ly(
-#   x=left_amygdala_vol,
-#   y=anxdep,
-#   z=age,
-#   type="scatter3d",
-#   mode="markers"
-#   
-#   
-# )
-
-
-
-# fig <- plot_ly(mtcars, x = ~wt, y = ~hp, z = ~qsec, color = ~am, colors = c('#BF382A', '#0C4B8E'))]
-fig <- plot_ly(plot_df, x = ~left_amygdala_vol, y = ~anxdep, z = ~age, type='scatter3d', mode='lines')
-# fig <- fig %>% add_markers()
-# fig <- fig %>% layout(scene = list(xaxis = list(title = 'Weight'),
-#                      yaxis = list(title = 'Gross horsepower'),
-#                      zaxis = list(title = '1/4 mile time')))
-
-fig
+plot_mh_by_brain(tmp)
 
 ```
 
-
-
-
-
-```{r}
-ggplot(plot_df, aes(x = age, y = filtered_value)) +
-  geom_point(alpha = 0.01) +
-  geom_smooth() +
-  geom_vline(
-    aes(xintercept = median_age, color = factor(median_age)),
-    linetype = "dashed") +
-  facet_grid(rows = vars(sex), cols = vars(summary_score)) +
-  # facet_wrap(sex~summary_score, scales='free') +
-  scale_color_discrete(
-    labels = c("Baseline", "Year 2", "Year 4", "Year 6")
-  ) +
-  labs(
-    color = "",
-    x = "Age (years)",
-    y = "Summary Scale Value"
-  ) +
-  theme_minimal() 
-
-```
 
