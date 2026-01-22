@@ -8,7 +8,8 @@ repeated_tables <- list(
     "mr_y_smri__vol__aseg__ag__lh_sum",
     "mr_y_smri__vol__aseg__ag__rh_sum",
     "mr_y_smri__vol__aseg__hc__lh_sum",
-    "mr_y_smri__vol__aseg__hc__rh_sum"
+    "mr_y_smri__vol__aseg__hc__rh_sum",
+    "mr_y_smri__vol__aseg__icv_sum"
   ),
   "mr_y_adm__info" = c("mr_y_adm__info__dev_serial"),
   "mr_y_qc__incl" = c("mr_y_qc__incl__smri__t1_indicator"),
@@ -174,6 +175,7 @@ format_subset <- function(df, timepoint_map, sex_map) {
       mr_y_smri__vol__aseg__ag__rh_sum,
       mr_y_smri__vol__aseg__hc__lh_sum,
       mr_y_smri__vol__aseg__hc__rh_sum,
+      mr_y_smri__vol__aseg__icv_sum,
       mr_y_adm__info__dev_serial,
       baseline_maternal_asr_int,
       baseline_maternal_asr_anxdep
