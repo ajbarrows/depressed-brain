@@ -29,7 +29,9 @@ repeated_tables <- list(
   "mh_p_cbcl" = c(
     "mh_p_cbcl__synd__attn_sum",
     "mh_p_cbcl__synd__anxdep_sum",
-    "mh_p_cbcl__synd__int_sum"
+    "mh_p_cbcl__synd__int_sum",
+    "mh_p_cbcl__synd__wthdep_sum",
+    "mh_p_cbcl__dsm__dep_sum"
   )
 )
 
@@ -171,6 +173,8 @@ format_subset <- function(df, timepoint_map, sex_map) {
       mh_p_cbcl__synd__anxdep_sum,
       mh_p_cbcl__synd__int_sum,
       mh_p_cbcl__synd__attn_sum,
+      mh_p_cbcl__synd__wthdep_sum,
+      mh_p_cbcl__dsm__dep_sum,
       mr_y_smri__vol__aseg__ag__lh_sum,
       mr_y_smri__vol__aseg__ag__rh_sum,
       mr_y_smri__vol__aseg__hc__lh_sum,

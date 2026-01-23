@@ -12,6 +12,7 @@ data/**
 
 
 reports/figures
+reports/quarto/_site
 
 
 *html
