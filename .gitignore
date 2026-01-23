@@ -16,3 +16,4 @@ reports/figures
 
 *html
 *.DS_Store
+*._
