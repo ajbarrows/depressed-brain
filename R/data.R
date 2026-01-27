@@ -1,6 +1,6 @@
 library(dplyr)
 
-data_path <- "./data/raw/"
+data_path <- "/Users/clarefmccann/University of Oregon Dropbox/Clare McCann/mine/projects/abcd-projs/abcd-data-release-6.0/nbdc-tools-data/"
 processed_path <- "./data/processed/"
 
 repeated_tables <- list(
