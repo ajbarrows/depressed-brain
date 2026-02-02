@@ -7,7 +7,28 @@ author: Clare McCann, Lucy Whitmore, Tony Barrows
 
 ### CBCL (parent report) depression scales
 
-![](./figures/cbcl_by_sex.png)
+![](./figures/mh_by_sex.png)
+
+
+### Agreement between depression scales
+
+::: {.panel-tabset}
+## Across time
+![](./figures/mh_correlation_all.png)
+
+## Baseline
+![](./figures/mh_correlation_baseline.png)
+
+## Year 2
+![](./figures/mh_correlation_year_2.png)
+
+## Year 4
+![](./figures/mh_correlation_year_4.png)
+
+## Year 6
+![](./figures/mh_correlation_year_6.png)
+:::
+
 
 ### Depression and subcortical volumes
 
