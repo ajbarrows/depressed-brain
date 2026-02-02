@@ -2,9 +2,10 @@ library(ggplot2)
 library(dplyr)
 
 outcomes_map <- c(
-  "mh_p_cbcl__synd__anxdep_sum" = "CBCL Anxious/Depressed",
+  "mh_p_cbcl__synd__wthdep_sum" = "CBCL Withdrawn/Depressed",
   "mh_p_cbcl__synd__int_sum" = "CBCL Internalizing",
-  "mh_p_cbcl__synd__attn_sum" = "CBCL Attention"
+  'mh_y_bpm__int_sum' = "BPM Internalizing (Youth)",
+  'total_ksads_dep_sx' = "KSADS Dep. Symptoms (sum)"
 )
 
 brain_map <- c(
@@ -48,9 +49,10 @@ reshape_for_plotting <- function(df) {
     join_median_timepoint_age() %>%
     tidyr::pivot_longer(
       cols = c(
-        mh_p_cbcl__synd__anxdep_sum,
+        mh_p_cbcl__synd__wthdep_sum,
         mh_p_cbcl__synd__int_sum,
-        # mh_p_cbcl__synd__attn_sum
+        mh_y_bpm__int_sum,
+        total_ksads_dep_sx
       ),
       names_to = 'summary_score',
       values_to = 'summary_score_value'
@@ -105,7 +107,7 @@ plot_cbcl_by_sex <- function(plot_df) {
       color = "",
       x = "Age (years)",
       y = "Summary Scale Value",
-      caption = "CBCL values >= 2sd above the mean removed for plotting"
+      caption = "values >= 2sd above the mean removed for plotting"
     ) +
     theme_minimal()
 }
@@ -136,4 +138,37 @@ plot_mh_by_brain <- function(
         y = "Volume",
         x = "Age (years)"
       ) 
+}
+
+make_pairplot <- function(df, outcomces_map, title = "") {
+  scale_agreement <- function(data, mapping) {
+    x_var <- rlang::as_name(mapping$x)
+    y_var <- rlang::as_name(mapping$y)
+    
+    cor_val <- cor(data[[x_var]], data[[y_var]], use = "complete.obs")
+    
+    ggplot(data = data, mapping = mapping) +
+      geom_point(alpha = 0.05) +
+      geom_smooth(method = 'lm') +
+      annotate("text", x = Inf, y = Inf, 
+              label = sprintf("r = %.2f", cor_val),
+              hjust = 1.1, vjust = 1.5)
+    }
+
+  df %>%
+    select(
+      mh_y_bpm__int_sum,
+      total_ksads_dep_sx,
+      mh_p_cbcl__synd__wthdep_sum,
+      mh_p_cbcl__synd__int_sum
+    ) %>%
+      rename_with(everything(), .fn = ~outcomes_map) %>%
+      GGally::ggpairs(
+        lower = list(continuous = scale_agreement),
+        upper = list(continuous = "blank"),
+        diag = list(continuous = "barDiag"),
+        switch = "both"
+      ) +
+        theme_minimal(base_size = 13) +
+        labs(title = title)
 }

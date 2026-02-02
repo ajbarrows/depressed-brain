@@ -29,8 +29,13 @@ repeated_tables <- list(
   "mh_p_cbcl" = c(
     "mh_p_cbcl__synd__attn_sum",
     "mh_p_cbcl__synd__anxdep_sum",
-    "mh_p_cbcl__synd__int_sum"
-  )
+    "mh_p_cbcl__synd__int_sum",
+    "mh_p_cbcl__synd__wthdep_sum",
+    "mh_p_cbcl__dsm__dep_sum"
+  ),
+  'mh_y_ksads__dep' = NULL,
+  'mh_t_bpm' = c('mh_t_bpm__int_sum'),
+  'mh_y_bpm' = c('mh_y_bpm__int_sum')
 )
 
 single_tpt_tables <- list(
@@ -146,6 +151,34 @@ limit_to_bio_mom <- function(df, timepoint = 'ses-00A') {
 
 }
 
+summarize_ksads_dep_sx <- function(df) {
+  df %>%
+    select(
+      (starts_with('mh_y_ksads') & ends_with('sx') & contains("pres")) # grab symptom scales (present only)
+    ) %>%
+      mutate(across(everything(), ~case_match(
+        .x,
+        "1" ~ "1",
+        "0" ~ "0",
+        .default = NA_character_
+      ))) %>%
+      mutate(across(everything(), as.numeric)) %>%
+      mutate(total_ksads_dep_sx = rowSums(across(everything()), na.rm=TRUE)) %>%
+      select(total_ksads_dep_sx) %>%
+      bind_cols(
+        df %>%
+          select(
+            participant_id, 
+            session_id,
+            mh_y_ksads__dep__mdd__pres_dx,
+            mh_y_ksads__dep__pdd__pres_dx,
+            !starts_with('mh_y_ksads')
+          )
+      ) %>%
+      select(participant_id, session_id, everything())
+}
+
+
 
 format_subset <- function(df, timepoint_map, sex_map) {
   df %>%
@@ -171,6 +204,10 @@ format_subset <- function(df, timepoint_map, sex_map) {
       mh_p_cbcl__synd__anxdep_sum,
       mh_p_cbcl__synd__int_sum,
       mh_p_cbcl__synd__attn_sum,
+      mh_p_cbcl__synd__wthdep_sum,
+      mh_p_cbcl__dsm__dep_sum,
+      mh_t_bpm__int_sum,
+      mh_y_bpm__int_sum,
       mr_y_smri__vol__aseg__ag__lh_sum,
       mr_y_smri__vol__aseg__ag__rh_sum,
       mr_y_smri__vol__aseg__hc__lh_sum,
@@ -178,7 +215,10 @@ format_subset <- function(df, timepoint_map, sex_map) {
       mr_y_smri__vol__aseg__icv_sum,
       mr_y_adm__info__dev_serial,
       baseline_maternal_asr_int,
-      baseline_maternal_asr_anxdep
+      baseline_maternal_asr_anxdep,
+      mh_y_ksads__dep__mdd__pres_dx,
+      mh_y_ksads__dep__pdd__pres_dx,
+      total_ksads_dep_sx
     ) %>%
     mutate(
       session_id = recode(session_id, !!!timepoint_map),
@@ -210,6 +250,7 @@ load_data <- function(
   subset <- df %>%
     filter_mri_qc() %>%
     limit_to_bio_mom() %>%
+    summarize_ksads_dep_sx() %>%
     format_subset(timepoint_map, sex_map)
 
   return(list(

@@ -3,15 +3,51 @@
 library(dplyr)
 
 # data_path <- "./data/raw/"
-processed_path <- "../data/processed/full_dataset.parquet"
+processed_path <- "./data/processed/full_dataset.parquet"
 df <- arrow::read_parquet(processed_path)
 ```
 
 ```{r}
-arrow::read_parquet("../data//processed/processed_tabular.parquet") %>%
-  distinct(participant_id, .keep_all = TRUE) %>%
-  count(ab_g_stc__cohort_sex)
+levels(df$mh_y_ksads__dep__anhed__pres_sx)
 ```
+
+```{r}
+```
+
+
+```{r}
+
+summarize_ksads_dep_sx <- function(df) {
+  df %>%
+    select(
+      (starts_with('mh_y_ksads') & ends_with('sx') & contains("pres")) # grab symptom scales (present only)
+    ) %>%
+      mutate(across(everything(), ~case_match(
+        .x,
+        "1" ~ "1",
+        "0" ~ "0",
+        .default = NA_character_
+      ))) %>%
+      mutate(across(everything(), as.numeric)) %>%
+      mutate(total_ksads_dep_sx = rowSums(across(everything()), na.rm=TRUE)) %>%
+      select(total_ksads_dep_sx) %>%
+      bind_cols(
+        df %>%
+          select(
+            participant_id, 
+            session_id,
+            mh_y_ksads__dep__mdd__pres_dx,
+            mh_y_ksads__dep__pdd__pres_dx,
+            !starts_with('mh_y_ksads')
+          )
+      ) %>%
+      select(participant_id, session_id, everything())
+}
+
+df %>% summarize_ksads_dep_sx()
+
+```
+
 
 
 

@@ -6,112 +6,137 @@ output: html_notebook
 ```{r}
 library(ggplot2)
 library(dplyr)
+
+source("./R/plot.R")
 ```
 
 
 ```{r}
-df <- arrow::read_parquet("../data/processed/harmonized_tabular.parquet")
+df <- arrow::read_parquet("./data/processed/harmonized_tabular.parquet")
 df
 ```
 
 
-
-
 ## Explore depression over time
 
-```{r}
-join_median_timepoint_age <- function(df) {
-  summary <- df %>%
-    group_by(session_id) %>%
-    summarize(median_age = median(ab_g_dyn__visit_age))
-  
-  df %>%
-    left_join(summary, by = "session_id")
-}
-
-detect_outliers <- function(df) {
-  tmp <- df %>%
-    group_by(summary_score) %>%
-    summarize(
-      mean_summary_score = mean(value, na.rm = TRUE),
-      twosd_summary_score = sd(value, na.rm = TRUE) * 2
-      ) %>%
-    ungroup()
-  
-  df %>%
-    left_join(tmp, by = "summary_score") %>%
-    mutate(masked_summary_score = ifelse(
-      value > mean_summary_score + twosd_summary_score |
-        value <= mean_summary_score - twosd_summary_score,
-      NA, value))
-}
-```
-
 
 ```{r}
-outcomes_map <- c(
-  "mh_p_cbcl__synd__anxdep_sum" = "CBCL Anxious/Depressed",
-  "mh_p_cbcl__synd__int_sum" = "CBCL Internalizing",
-  "mh_p_cbcl__synd__attn_sum" = "CBCL Attention"
-)
-
-
-
-
-reshape_for_plotting <- function(df) {
-  df %>%
-    join_median_timepoint_age() %>%
-    tidyr::pivot_longer(
-      cols = c(
-        mh_p_cbcl__synd__anxdep_sum,
-        mh_p_cbcl__synd__int_sum,
-        # mh_p_cbcl__synd__attn_sum
-      ),
-      names_to = 'summary_score'
-    ) %>%
-    mutate(summary_score = recode(summary_score, !!!(outcomes_map))) %>%
-    detect_outliers() %>%
-    select(
-      age = ab_g_dyn__visit_age,
-      sex = ab_g_stc__cohort_sex,
-     everything())
-}
-
-
-plot_cbcl_by_sex <- function(plot_df) {
-  ggplot(plot_df, aes(x = age, y = masked_summary_score)) +
-    geom_point(alpha = 0.01) +
-    geom_vline(
-      aes(xintercept = median_age, color = factor(median_age)),
-      linetype = "dashed") +
-    facet_wrap(~summary_score, scales='free') +
-    geom_smooth(aes(color = sex)) +
-  scale_color_discrete(
-    labels = setNames(
-      c("Baseline", "Year 2", "Year 4", "Year 6"),
-      sort(unique(plot_df$median_age))
-    )
-  ) +
-    labs(
-      color = "",
-      x = "Age (years)",
-      linetype = "Timepoint",
-      y = "Summary Scale Value",
-      caption = "CBCL values >= 2sd above the mean removed for plotting"
-    ) +
-    theme_minimal()
-}
-
-reshape_for_plotting(df) %>%
-  plot_cbcl_by_sex()
-```
-
-
-
-```{r}
+# reshape_for_plotting(df) %>%
+#   plot_cbcl_by_sex()
 
 reshaped <- reshape_for_plotting(df)
 reshaped
+
+```
+
+
+```{r}
+df %>%
+  select(
+    mh_y_bpm__int_sum,
+    total_ksads_dep_sx,
+    mh_p_cbcl__synd__wthdep_sum,
+    mh_p_cbcl__synd__int_sum
+  ) %>%
+  rename_with(everything(), .fn = ~outcomes_map)
+```
+
+```{r}
+make_pairplot <- function(df, outcomces_map, title = "") {
+  scale_agreement <- function(data, mapping) {
+    x_var <- rlang::as_name(mapping$x)
+    y_var <- rlang::as_name(mapping$y)
+    
+    cor_val <- cor(data[[x_var]], data[[y_var]], use = "complete.obs")
+    
+    ggplot(data = data, mapping = mapping) +
+      geom_point(alpha = 0.05) +
+      geom_smooth(method = 'lm') +
+      annotate("text", x = Inf, y = Inf, 
+              label = sprintf("r = %.2f", cor_val),
+              hjust = 1.1, vjust = 1.5)
+    }
+
+  df %>%
+    select(
+      mh_y_bpm__int_sum,
+      total_ksads_dep_sx,
+      mh_p_cbcl__synd__wthdep_sum,
+      mh_p_cbcl__synd__int_sum
+    ) %>%
+      rename_with(everything(), .fn = ~outcomes_map) %>%
+      GGally::ggpairs(
+        lower = list(continuous = scale_agreement),
+        upper = list(continuous = "blank"),
+        diag = list(continuous = "barDiag"),
+        switch = "both"
+      ) +
+        theme_minimal() +
+        labs(title = title)
+}
+
+make_pairplot(df, outcomes_map, "Depression Symptoms (all time points)")
+
+ggsave("./reports/figures/mh_correlation_all.png", dpi = 'retina', width=8, height=8)
+
+```
+
+
+```{r}
+tpts <- c("baseline", "year_2", "year_4", "year_6")
+fpath <- "./reports/figures/"
+for (tpt in tpts) {
+  title <- paste0("Depression Symptoms (", tpt, ")")
+  fname <- paste0(fpath, "mh_correlation_", tpt, ".png")
+  
+  make_pairplot(df, outcomes_map, title)
+  ggsave(fname, dpi = "retina", width=8, height=8)
+}
+
+```
+
+
+```{r}
+
+
+
+```
+
+```{r}
+
+
+
+
+# plot_cbcl_by_sex <- function(plot_df) {
+#   ggplot(plot_df, aes(x = age, y = masked_summary_score)) +
+#     geom_point(alpha = 0.01) +
+#     geom_vline(
+#       aes(xintercept = median_age, color = factor(median_age)),
+#       linetype = "dashed") +
+#     facet_wrap(~summary_score, scales='free') +
+#     geom_smooth(aes(color = sex)) +
+#   scale_color_discrete(
+#     labels = setNames(
+#       c("Baseline", "Year 2", "Year 4", "Year 6"),
+#       sort(unique(plot_df$median_age))
+#     )
+#   ) +
+#     labs(
+#       color = "",
+#       x = "Age (years)",
+#       y = "Summary Scale Value",
+#       caption = "CBCL values >= 2sd above the mean removed for plotting"
+#     ) +
+#     theme_minimal()
+# }
+
+
+```
+
+
+
+```{r}
+
 
 ```
 
