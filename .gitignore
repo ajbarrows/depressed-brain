@@ -20,3 +20,5 @@ reports/quarto/_site
 *._
 
 scripts/PROC*
+
+*.pdf

@@ -25,7 +25,10 @@ fpath <- "./reports/figures/"
 for (tpt in tpts) {
   title <- paste0("Depression Symptoms (", tpt, ")")
   fname <- paste0(fpath, "mh_correlation_", tpt, ".png")
-  
-  make_pairplot(df, outcomes_map, title)
-  ggsave(fname, dpi = "retina", width=8, height=8)
+    
+  p <- df %>%
+    filter(session_id == tpt) %>%
+    make_pairplot(outcomes_map, title)
+
+  ggsave(fname, plot = p, dpi = "retina", width=8, height=8)
 }

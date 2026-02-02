@@ -81,6 +81,17 @@ filter_mri_qc <- function(df) {
     filter(mr_y_qc__incl__smri__t1_indicator == 1)
 }
 
+join_6mo_bpm <- function(df) {
+  tmp <- df %>%
+    filter(session_id == 'ses-00M') %>%
+    select(participant_id, contains("bpm__int"))
+  
+  df %>%
+    left_join(tmp, by = "participant_id", suffix = c("", "_6mo")) %>%
+    mutate(across(contains("bpm__int") & !contains("_6mo"), 
+                  ~coalesce(., get(paste0(cur_column(), "_6mo")))))
+}
+
 # figure out what day the ASR was collected
 extract_corresponding_day <- function(df) {
   df %>%
@@ -180,6 +191,8 @@ summarize_ksads_dep_sx <- function(df) {
 
 
 
+
+
 format_subset <- function(df, timepoint_map, sex_map) {
   df %>%
     select(
@@ -226,7 +239,8 @@ format_subset <- function(df, timepoint_map, sex_map) {
       mr_y_adm__info__dev_serial = factor(mr_y_adm__info__dev_serial)
     ) %>%
     arrange(participant_id, session_id) %>%
-    tidyr::drop_na()
+    tidyr::drop_na(!(starts_with("mh_y_bpm")))
+
 }
 
 join_tables <- function(df, other, key = 'participant_id') {
@@ -250,6 +264,7 @@ load_data <- function(
   subset <- df %>%
     filter_mri_qc() %>%
     limit_to_bio_mom() %>%
+    join_6mo_bpm() %>%
     summarize_ksads_dep_sx() %>%
     format_subset(timepoint_map, sex_map)
 

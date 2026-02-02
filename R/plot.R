@@ -2,9 +2,9 @@ library(ggplot2)
 library(dplyr)
 
 outcomes_map <- c(
-  "mh_p_cbcl__synd__wthdep_sum" = "CBCL Withdrawn/Depressed",
-  "mh_p_cbcl__synd__int_sum" = "CBCL Internalizing",
-  'mh_y_bpm__int_sum' = "BPM Internalizing (Youth)",
+  "mh_p_cbcl__synd__wthdep_sum" = "CBCL With/Dep",
+  "mh_p_cbcl__synd__int_sum" = "CBCL Int.",
+  'mh_y_bpm__int_sum' = "BPM Int. (Youth)",
   'total_ksads_dep_sx' = "KSADS Dep. Symptoms (sum)"
 )
 
@@ -140,20 +140,24 @@ plot_mh_by_brain <- function(
       ) 
 }
 
-make_pairplot <- function(df, outcomces_map, title = "") {
+make_pairplot <- function(df, outcomes_map, title = "") {
   scale_agreement <- function(data, mapping) {
     x_var <- rlang::as_name(mapping$x)
     y_var <- rlang::as_name(mapping$y)
     
     cor_val <- cor(data[[x_var]], data[[y_var]], use = "complete.obs")
     
-    ggplot(data = data, mapping = mapping) +
+    p <- ggplot(data = data, mapping = mapping) +
       geom_point(alpha = 0.05) +
-      geom_smooth(method = 'lm') +
-      annotate("text", x = Inf, y = Inf, 
-              label = sprintf("r = %.2f", cor_val),
-              hjust = 1.1, vjust = 1.5)
+      geom_smooth(method = 'lm')
+    
+    if (!is.na(cor_val)) {
+      p <- p + annotate("text", x = -Inf, y = Inf, 
+                        label = sprintf("r = %.2f", cor_val),
+                        hjust = -0.1, vjust = 1.5)
     }
+    p
+  }
 
   df %>%
     select(
@@ -162,7 +166,8 @@ make_pairplot <- function(df, outcomces_map, title = "") {
       mh_p_cbcl__synd__wthdep_sum,
       mh_p_cbcl__synd__int_sum
     ) %>%
-      rename_with(everything(), .fn = ~outcomes_map) %>%
+      rename(all_of(setNames(names(outcomes_map), outcomes_map))) %>%
+      select(where(~sum(!is.na(.x)) > 0)) %>%
       GGally::ggpairs(
         lower = list(continuous = scale_agreement),
         upper = list(continuous = "blank"),
