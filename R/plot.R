@@ -120,6 +120,7 @@ plot_mh_by_brain <- function(
     color_label = "Log Summary Score Value"){
   df %>%
     filter(stringr::str_detect(structure_var, structure_string)) %>%
+    filter(!is.na(summary_score_value)) %>%
     ggplot(aes(x = age, y = volume_masked, color = summary_score_value)) +
       geom_point(alpha = alpha) +
       scale_color_viridis_c(transform = transform) +
