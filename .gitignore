@@ -18,3 +18,5 @@ reports/quarto/_site
 *html
 *.DS_Store
 *._
+
+scripts/PROC*
