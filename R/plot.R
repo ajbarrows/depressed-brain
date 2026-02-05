@@ -2,9 +2,10 @@ library(ggplot2)
 library(dplyr)
 
 outcomes_map <- c(
-  "mh_p_cbcl__synd__anxdep_sum" = "CBCL Anxious/Depressed",
-  "mh_p_cbcl__synd__int_sum" = "CBCL Internalizing",
-  "mh_p_cbcl__synd__attn_sum" = "CBCL Attention"
+  "mh_p_cbcl__synd__wthdep_sum" = "CBCL With/Dep",
+  "mh_p_cbcl__synd__int_sum" = "CBCL Int.",
+  'mh_y_bpm__int_sum' = "BPM Int. (Youth)",
+  'total_ksads_dep_sx' = "KSADS Dep. Symptoms (sum)"
 )
 
 brain_map <- c(
@@ -48,9 +49,10 @@ reshape_for_plotting <- function(df) {
     join_median_timepoint_age() %>%
     tidyr::pivot_longer(
       cols = c(
-        mh_p_cbcl__synd__anxdep_sum,
+        mh_p_cbcl__synd__wthdep_sum,
         mh_p_cbcl__synd__int_sum,
-        # mh_p_cbcl__synd__attn_sum
+        mh_y_bpm__int_sum,
+        total_ksads_dep_sx
       ),
       names_to = 'summary_score',
       values_to = 'summary_score_value'
@@ -105,7 +107,7 @@ plot_cbcl_by_sex <- function(plot_df) {
       color = "",
       x = "Age (years)",
       y = "Summary Scale Value",
-      caption = "CBCL values >= 2sd above the mean removed for plotting"
+      caption = "values >= 2sd above the mean removed for plotting"
     ) +
     theme_minimal()
 }
@@ -118,6 +120,7 @@ plot_mh_by_brain <- function(
     color_label = "Log Summary Score Value"){
   df %>%
     filter(stringr::str_detect(structure_var, structure_string)) %>%
+    filter(!is.na(summary_score_value)) %>%
     ggplot(aes(x = age, y = volume_masked, color = summary_score_value)) +
       geom_point(alpha = alpha) +
       scale_color_viridis_c(transform = transform) +
@@ -136,4 +139,42 @@ plot_mh_by_brain <- function(
         y = "Volume",
         x = "Age (years)"
       ) 
+}
+
+make_pairplot <- function(df, outcomes_map, title = "") {
+  scale_agreement <- function(data, mapping) {
+    x_var <- rlang::as_name(mapping$x)
+    y_var <- rlang::as_name(mapping$y)
+    
+    cor_val <- cor(data[[x_var]], data[[y_var]], use = "complete.obs")
+    
+    p <- ggplot(data = data, mapping = mapping) +
+      geom_point(alpha = 0.05) +
+      geom_smooth(method = 'lm')
+    
+    if (!is.na(cor_val)) {
+      p <- p + annotate("text", x = -Inf, y = Inf, 
+                        label = sprintf("r = %.2f", cor_val),
+                        hjust = -0.1, vjust = 1.5)
+    }
+    p
+  }
+
+  df %>%
+    select(
+      mh_y_bpm__int_sum,
+      total_ksads_dep_sx,
+      mh_p_cbcl__synd__wthdep_sum,
+      mh_p_cbcl__synd__int_sum
+    ) %>%
+      rename(all_of(setNames(names(outcomes_map), outcomes_map))) %>%
+      select(where(~sum(!is.na(.x)) > 0)) %>%
+      GGally::ggpairs(
+        lower = list(continuous = scale_agreement),
+        upper = list(continuous = "blank"),
+        diag = list(continuous = "barDiag"),
+        switch = "both"
+      ) +
+        theme_minimal(base_size = 13) +
+        labs(title = title)
 }

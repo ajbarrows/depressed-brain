@@ -5,13 +5,23 @@ processed_path <- "./data/processed/"
 
 load_subcortical_data <- function(fpath) {
   arrow::read_parquet(fpath) |>
-    tidyr::drop_na()
+    tidyr::drop_na(starts_with("mr_y_smri"))
 }
 
 
 harmonize_site <- function(df) {
   # brainname_subvolume <- c(names(df)[6:9])
   brainname_subvolume <- df |> dplyr::select(starts_with("mr_y_smri")) |> names()
+
+  sub <- df |>
+    dplyr::select(
+      participant_id,
+      session_id,
+      mr_y_adm__info__dev_serial,
+      ab_g_dyn__visit_age,
+      ab_g_stc__cohort_sex,
+      starts_with("mr_y_smri")
+    )
 
   subvolume_combat <- longCombat(
     idvar = 'participant_id',
@@ -22,7 +32,7 @@ harmonize_site <- function(df) {
     features = brainname_subvolume,
     formula = 'ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
     ranef = '(1|participant_id)',
-    data = df
+    data = sub
   )
 
 

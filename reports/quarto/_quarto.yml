@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "."
+  title: "Maternal Depression and Brain Development"
   navbar:
     left:
       - href: index.qmd

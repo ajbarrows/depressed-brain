@@ -12,8 +12,16 @@ data/**
 
 
 reports/figures
+reports/quarto/_site
 
 
 *html
 *.DS_Store
 *._
+<<<<<<< HEAD
+=======
+
+scripts/PROC*
+
+*.pdf
+>>>>>>> origin/main
