@@ -1,4 +1,4 @@
-source("R/combat.R")
+source("/Users/clarefmccann/University of Oregon Dropbox/Clare McCann/mine/projects/abcd-projs/PATHS/depressed-brain/R/combat.R")
 
 set.seed(42)
 

@@ -1,7 +1,7 @@
 library(dplyr)
 
 data_path <- "/Users/clarefmccann/University of Oregon Dropbox/Clare McCann/mine/projects/abcd-projs/abcd-data-release-6.0/nbdc-tools-data/"
-processed_path <- "./data/processed/"
+processed_path <- "/Users/clarefmccann/University of Oregon Dropbox/Clare McCann/mine/projects/abcd-projs/PATHS/depressed-brain/data/processed/"
 
 repeated_tables <- list(
   "mr_y_smri__vol__aseg" = c(

@@ -1,6 +1,6 @@
 library(longCombat)
 
-processed_path <- "./data/processed/"
+processed_path <- "/Users/clarefmccann/University of Oregon Dropbox/Clare McCann/mine/projects/abcd-projs/PATHS/depressed-brain/data/processed/"
 
 
 load_subcortical_data <- function(fpath) {

@@ -1,4 +1,4 @@
-source("R/data.R")
+source("/Users/clarefmccann/University of Oregon Dropbox/Clare McCann/mine/projects/abcd-projs/PATHS/depressed-brain/R/data.R")
 
 data <- load_data(
   repeated_tables,
