@@ -1,5 +1,9 @@
 library(longCombat)
 
+# CFM paths
+#proj_path <- here::here()
+#processed_path <- paste0(proj_path, "/data/processed/")
+
 processed_path <- "./data/processed/"
 
 
@@ -16,7 +20,7 @@ harmonize_site <- function(df) {
   sub <- df |>
     dplyr::select(
       participant_id,
-      session_id,
+      # session_id,
       mr_y_adm__info__dev_serial,
       ab_g_dyn__visit_age,
       ab_g_stc__cohort_sex,
@@ -25,12 +29,12 @@ harmonize_site <- function(df) {
 
   subvolume_combat <- longCombat(
     idvar = 'participant_id',
-    timevar = 'session_id',
+   # timevar = 'session_id',
     # could also be smri_visitid
     batchvar = 'mr_y_adm__info__dev_serial',
     # should be a factor
     features = brainname_subvolume,
-    formula = 'ab_g_dyn__visit_age + ab_g_stc__cohort_sex + session_id',
+    formula = 'ab_g_dyn__visit_age + ab_g_stc__cohort_sex',
     ranef = '(1|participant_id)',
     data = sub
   )
@@ -44,7 +48,7 @@ harmonize_site <- function(df) {
     df |> dplyr::select(-all_of(brainname_subvolume)),
     by = c(
       'participant_id',
-      'session_id',
+    #  'session_id',
       'mr_y_adm__info__dev_serial'
     )
   )
