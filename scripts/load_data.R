@@ -1,3 +1,7 @@
+# CFM paths
+#proj_path <- here::here()
+#source(paste0(proj_path, "/R/data.R"))
+
 source("R/data.R")
 
 data <- load_data(

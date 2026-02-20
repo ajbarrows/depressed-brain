@@ -1,3 +1,7 @@
+# CFM paths
+#proj_root <- here::here()
+#source(paste0(proj_root, "/R/combat.R"))
+
 source("R/combat.R")
 
 set.seed(42)

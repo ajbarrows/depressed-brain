@@ -1,5 +1,12 @@
 library(dplyr)
 
+## CFM paths
+#proj_path <- here::here()
+#data_root <- Sys.getenv("HOME_DIR")
+
+#data_path <- paste0(data_root, "/projects/abcd-projs/abcd-data-release-6.0/nbdc-tools-data/")
+#processed_path <- paste0(proj_path, "/data/processed/")
+
 data_path <- "./data/raw/"
 processed_path <- "./data/processed/"
 
