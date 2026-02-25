@@ -1,3 +1,8 @@
+if (!requireNamespace("neuroCombat", quietly = TRUE)) {
+  devtools::install.github("jfortin1/neuroCombat_Rpackage")
+}
+
+
 source("R/combat.R")
 
 set.seed(42)

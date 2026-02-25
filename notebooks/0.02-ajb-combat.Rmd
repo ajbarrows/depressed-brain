@@ -1,5 +1,10 @@
-library(neuroCombat)
 
+```{r}
+library(neuroCombat)
+```
+
+
+```{r}
 processed_path <- "./data/processed/"
 
 
@@ -7,10 +12,17 @@ load_subcortical_data <- function(fpath) {
   arrow::read_parquet(fpath) |>
     tidyr::drop_na(starts_with("mr_y_smri"))
 }
+included_data <- load_subcortical_data(paste0(processed_path, "processed_tabular.parquet"))
+```
 
+
+
+
+
+```{r}
 pivot_to_matrix <- function(df) {
     df |>
-        dplyr::select(participant_id, starts_with("mr_y_smri")) |>
+        dplyr::select(participant_id, starts_with("mr_y_smri"), -contains("icv")) |>
         dplyr::distinct(participant_id, .keep_all = TRUE) |>
         tidyr::pivot_longer(-participant_id, names_to = 'feature') |>
         tidyr::pivot_wider(
@@ -21,6 +33,17 @@ pivot_to_matrix <- function(df) {
         tibble::column_to_rownames(var = "feature")
 }
 
+```
+
+```{r}
+mod <- model.matrix(~ age + sex, data = included_data)
+batch <- as.numeric(as.factor(included_data$scanner_serial))
+
+subvolume_combat <- neuroCombat(dat = tmp, batch = batch, mod = mod)
+```
+
+
+```{r}
 pivot_to_dataframe <- function(combat_result) {
   combat_result$dat.combat |>
     as.data.frame() |>
@@ -32,32 +55,4 @@ pivot_to_dataframe <- function(combat_result) {
       values_from = value
     )
 }
-
-
-
-harmonize_site <- function(df) {
-  
-  sub <- pivot_to_matrix(df)
-  
-  mod <- model.matrix(~ age + sex, data = df)
-  batch <- as.numeric(as.factor(df$scanner_serial))
-
-  subvolume_combat <- neuroCombat(dat = sub, batch = batch)
-  
-  # extract harmonized data
-  harmonized_subcortical_volume <- pivot_to_dataframe(subvolume_combat)
-
-  brainname_subvolume <- df |>
-    dplyr::select(starts_with('mr_y_smri')) |>
-    colnames()
-
-  dplyr::left_join(
-    harmonized_subcortical_volume,
-    df |> dplyr::select(-all_of(brainname_subvolume)),
-    by = 'participant_id'
-  )
-}
-
-
-
-
+```
