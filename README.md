@@ -15,5 +15,6 @@ cd depressed-brain
 ```
 Rscript scripts/load_data.R
 Rscript scripts/harmonize_data.R
+Rscript scripts/generate_plots.R
 ```
 

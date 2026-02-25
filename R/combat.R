@@ -1,5 +1,9 @@
 library(neuroCombat)
 
+# CFM paths
+#proj_path <- here::here()
+#processed_path <- paste0(proj_path, "/data/processed/")
+
 processed_path <- "./data/processed/"
 
 

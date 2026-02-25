@@ -8,14 +8,6 @@ df <- arrow::read_parquet(processed_path)
 ```
 
 ```{r}
-levels(df$mh_y_ksads__dep__anhed__pres_sx)
-```
-
-```{r}
-```
-
-
-```{r}
 
 summarize_ksads_dep_sx <- function(df) {
   df %>%
@@ -165,6 +157,12 @@ tmp
   
 ```
 ```{r}
-tmp
+df <- arrow::read_parquet("./data/processed/harmonized_tabular.parquet")
+df
 ```
+
+
+
+
+
 
