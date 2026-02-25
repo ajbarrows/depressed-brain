@@ -22,3 +22,6 @@ reports/quarto/_site
 scripts/PROC*
 
 *.pdf
+
+*.Rdata
+*.Rhistory
