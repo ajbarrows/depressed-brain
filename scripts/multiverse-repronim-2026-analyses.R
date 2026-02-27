@@ -6,327 +6,263 @@
 #     toc_depth: 3
 # ---
 
-proj_root = "/shared/hackathon/working-area/"
+# --- project + deps ----------------------------------------------------
 
-pacman::p_load("dplyr", "lavaan", "semptools")
+proj_root <- here::here()
 
-data <- read.csv(paste0(proj_root, ""))
+source(file.path(proj_root, "R/PROCESS_v4/process.R"))
 
-process(data = data_full, cov = c("sample_meancen", "ses_meancen", "DEM_2"), y = "MASQ_GD", x = "ela_meancen", m = c("age_onset_meancen", "pam_meancen"), boot = 10000, model = 6, total = 1)
+pacman::p_load("arrow", "dplyr", "tidyr", "purrr", "tibble", "htmltools")
 
-# left_AMYG_uni <- '
-# 
-# # latent true scores
-# left_AMYGlv_BL =~ 1*left_AMYG_BL
-# left_AMYGlv_Y2 =~ 1*left_AMYG_Y2
-# left_AMYGlv_Y4 =~ 1*left_AMYG_Y4
-# left_AMYGlv_Y6 =~ 1*left_AMYG_Y6
-# 
-# # perfect autoregression (LCS backbone)
-# left_AMYGlv_Y2 ~ 1*left_AMYGlv_BL
-# left_AMYGlv_Y4 ~ 1*left_AMYGlv_Y2
-# left_AMYGlv_Y6 ~ 1*left_AMYGlv_Y4
-# 
-# # latent change scores
-# dleft_AMYG1 =~ 1*left_AMYGlv_Y2
-# dleft_AMYG2 =~ 1*left_AMYGlv_Y4
-# dleft_AMYG3 =~ 1*left_AMYGlv_Y6
-# 
-# # residual variances (constrained)
-# left_AMYG_BL ~~ res_left_AMYGvar*left_AMYG_BL
-# left_AMYG_Y2 ~~ res_left_AMYGvar*left_AMYG_Y2
-# left_AMYG_Y4 ~~ res_left_AMYGvar*left_AMYG_Y4
-# left_AMYG_Y6 ~~ res_left_AMYGvar*left_AMYG_Y6
-# 
-# # self-feedback (inertia)
-# dleft_AMYG1 ~ left_AMYGselfFB*left_AMYGlv_BL
-# dleft_AMYG2 ~ left_AMYGselfFB*left_AMYGlv_Y2
-# dleft_AMYG3 ~ left_AMYGselfFB*left_AMYGlv_Y4
-# 
-# # growth factors
-# ileft_AMYG =~ 1*left_AMYGlv_BL
-# sleft_AMYG =~ 1*dleft_AMYG1 + 1*dleft_AMYG2 + 1*dleft_AMYG3
-# 
-# # growth means and variances
-# ileft_AMYG ~ 1
-# ileft_AMYG ~~ ileft_AMYG
-# sleft_AMYG ~ 1
-# sleft_AMYG ~~ sleft_AMYG
-# 
-# # intercept–slope covariance
-# ileft_AMYG ~~ sleft_AMYG
-# '
-# 
-# fit_left_AMYG <- lavaan(left_AMYG_uni, data=data, estimator='mlr',missing='fiml')
-# summary(fit_left_AMYG, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE) 
-# 
-# right_AMYG_uni <- '
-# 
-# # latent true scores
-# right_AMYGlv_BL =~ 1*right_AMYG_BL
-# right_AMYGlv_Y2 =~ 1*right_AMYG_Y2
-# right_AMYGlv_Y4 =~ 1*right_AMYG_Y4
-# right_AMYGlv_Y6 =~ 1*right_AMYG_Y6
-# 
-# # perfect autoregression (LCS backbone)
-# right_AMYGlv_Y2 ~ 1*right_AMYGlv_BL
-# right_AMYGlv_Y4 ~ 1*right_AMYGlv_Y2
-# right_AMYGlv_Y6 ~ 1*right_AMYGlv_Y4
-# 
-# # latent change scores
-# dright_AMYG1 =~ 1*right_AMYGlv_Y2
-# dright_AMYG2 =~ 1*right_AMYGlv_Y4
-# dright_AMYG3 =~ 1*right_AMYGlv_Y6
-# 
-# # residual variances (constrained)
-# right_AMYG_BL ~~ res_right_AMYGvar*right_AMYG_BL
-# right_AMYG_Y2 ~~ res_right_AMYGvar*right_AMYG_Y2
-# right_AMYG_Y4 ~~ res_right_AMYGvar*right_AMYG_Y4
-# right_AMYG_Y6 ~~ res_right_AMYGvar*right_AMYG_Y6
-# 
-# # self-feedback (inertia)
-# dright_AMYG1 ~ right_AMYGselfFB*right_AMYGlv_BL
-# dright_AMYG2 ~ right_AMYGselfFB*right_AMYGlv_Y2
-# dright_AMYG3 ~ right_AMYGselfFB*right_AMYGlv_Y4
-# 
-# # growth factors
-# iright_AMYG =~ 1*right_AMYGlv_BL
-# sright_AMYG =~ 1*dright_AMYG1 + 1*dright_AMYG2 + 1*dright_AMYG3
-# 
-# # growth means and variances
-# iright_AMYG ~ 1
-# iright_AMYG ~~ iright_AMYG
-# sright_AMYG ~ 1
-# sright_AMYG ~~ sright_AMYG
-# 
-# # intercept–slope covariance
-# iright_AMYG ~~ sright_AMYG
-# '
-# 
-# fit_right_AMYG <- lavaan(right_AMYG_uni, data=data, estimator='mlr',missing='fiml')
-# summary(fit_right_AMYG, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE) 
-# 
-# left_HIPPO_uni <- '
-# 
-# # latent true scores
-# left_HIPPOlv_BL =~ 1*left_HIPPO_BL
-# left_HIPPOlv_Y2 =~ 1*left_HIPPO_Y2
-# left_HIPPOlv_Y4 =~ 1*left_HIPPO_Y4
-# left_HIPPOlv_Y6 =~ 1*left_HIPPO_Y6
-# 
-# # perfect autoregression (LCS backbone)
-# left_HIPPOlv_Y2 ~ 1*left_HIPPOlv_BL
-# left_HIPPOlv_Y4 ~ 1*left_HIPPOlv_Y2
-# left_HIPPOlv_Y6 ~ 1*left_HIPPOlv_Y4
-# 
-# # latent change scores
-# dleft_HIPPO1 =~ 1*left_HIPPOlv_Y2
-# dleft_HIPPO2 =~ 1*left_HIPPOlv_Y4
-# dleft_HIPPO3 =~ 1*left_HIPPOlv_Y6
-# 
-# # residual variances (constrained)
-# left_HIPPO_BL ~~ res_left_HIPPOvar*left_HIPPO_BL
-# left_HIPPO_Y2 ~~ res_left_HIPPOvar*left_HIPPO_Y2
-# left_HIPPO_Y4 ~~ res_left_HIPPOvar*left_HIPPO_Y4
-# left_HIPPO_Y6 ~~ res_left_HIPPOvar*left_HIPPO_Y6
-# 
-# # self-feedback (inertia)
-# dleft_HIPPO1 ~ left_HIPPOselfFB*left_HIPPOlv_BL
-# dleft_HIPPO2 ~ left_HIPPOselfFB*left_HIPPOlv_Y2
-# dleft_HIPPO3 ~ left_HIPPOselfFB*left_HIPPOlv_Y4
-# 
-# # growth factors
-# ileft_HIPPO =~ 1*left_HIPPOlv_BL
-# sleft_HIPPO =~ 1*dleft_HIPPO1 + 1*dleft_HIPPO2 + 1*dleft_HIPPO3
-# 
-# # growth means and variances
-# ileft_HIPPO ~ 1
-# ileft_HIPPO ~~ ileft_HIPPO
-# sleft_HIPPO ~ 1
-# sleft_HIPPO ~~ sleft_HIPPO
-# 
-# # intercept–slope covariance
-# ileft_HIPPO ~~ sleft_HIPPO
-# '
-# fit_left_HIPPO <- lavaan(left_HIPPO_uni, data=data, estimator='mlr',missing='fiml')
-# summary(fit_left_HIPPO, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE) 
-# 
-# right_HIPPO_uni <- '
-# 
-# # latent true scores
-# right_HIPPOlv_BL =~ 1*right_HIPPO_BL
-# right_HIPPOlv_Y2 =~ 1*right_HIPPO_Y2
-# right_HIPPOlv_Y4 =~ 1*right_HIPPO_Y4
-# right_HIPPOlv_Y6 =~ 1*right_HIPPO_Y6
-# 
-# # perfect autoregression (LCS backbone)
-# right_HIPPOlv_Y2 ~ 1*right_HIPPOlv_BL
-# right_HIPPOlv_Y4 ~ 1*right_HIPPOlv_Y2
-# right_HIPPOlv_Y6 ~ 1*right_HIPPOlv_Y4
-# 
-# # latent change scores
-# dright_HIPPO1 =~ 1*right_HIPPOlv_Y2
-# dright_HIPPO2 =~ 1*right_HIPPOlv_Y4
-# dright_HIPPO3 =~ 1*right_HIPPOlv_Y6
-# 
-# # residual variances (constrained)
-# right_HIPPO_BL ~~ res_right_HIPPOvar*right_HIPPO_BL
-# right_HIPPO_Y2 ~~ res_right_HIPPOvar*right_HIPPO_Y2
-# right_HIPPO_Y4 ~~ res_right_HIPPOvar*right_HIPPO_Y4
-# right_HIPPO_Y6 ~~ res_right_HIPPOvar*right_HIPPO_Y6
-# 
-# # self-feedback (inertia)
-# dright_HIPPO1 ~ right_HIPPOselfFB*right_HIPPOlv_BL
-# dright_HIPPO2 ~ right_HIPPOselfFB*right_HIPPOlv_Y2
-# dright_HIPPO3 ~ right_HIPPOselfFB*right_HIPPOlv_Y4
-# 
-# # growth factors
-# iright_HIPPO =~ 1*right_HIPPOlv_BL
-# sright_HIPPO =~ 1*dright_HIPPO1 + 1*dright_HIPPO2 + 1*dright_HIPPO3
-# 
-# # growth means and variances
-# iright_HIPPO ~ 1
-# iright_HIPPO ~~ iright_HIPPO
-# sright_HIPPO ~ 1
-# sright_HIPPO ~~ sright_HIPPO
-# 
-# # intercept–slope covariance
-# iright_HIPPO ~~ sright_HIPPO
-# '
-# 
-# fit_right_HIPPO <- lavaan(right_HIPPO_uni, data=data, estimator='mlr',missing='fiml')
-# summary(fit_right_HIPPO, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE) 
-# 
-# DEP_uni <- '
-# 
-# # latent true scores
-# DEPlv_BL =~ 1*DEP_BL
-# DEPlv_Y2 =~ 1*DEP_Y2
-# DEPlv_Y4 =~ 1*DEP_Y4
-# DEPlv_Y6 =~ 1*DEP_Y6
-# 
-# # perfect autoregression
-# DEPlv_Y2 ~ 1*DEPlv_BL
-# DEPlv_Y4 ~ 1*DEPlv_Y2
-# DEPlv_Y6 ~ 1*DEPlv_Y4
-# 
-# # latent change scores
-# dDEP1 =~ 1*DEPlv_Y2
-# dDEP2 =~ 1*DEPlv_Y4
-# dDEP3 =~ 1*DEPlv_Y6
-# 
-# # residual variances (constrained)
-# DEP_BL ~~ resDEPvar*DEP_BL
-# DEP_Y2 ~~ resDEPvar*DEP_Y2
-# DEP_Y4 ~~ resDEPvar*DEP_Y4
-# DEP_Y6 ~~ resDEPvar*DEP_Y6
-# 
-# # self-feedback
-# dDEP1 ~ DEPselfFB*DEPlv_BL
-# dDEP2 ~ DEPselfFB*DEPlv_Y2
-# dDEP3 ~ DEPselfFB*DEPlv_Y4
-# 
-# # growth factors
-# iDEP =~ 1*DEPlv_BL
-# sDEP =~ 1*dDEP1 + 1*dDEP2 + 1*dDEP3
-# 
-# # growth means and variances
-# iDEP ~ 1
-# iDEP ~~ iDEP
-# sDEP ~ 1
-# sDEP ~~ sDEP
-# 
-# # intercept–slope covariance
-# iDEP ~~ sDEP
-# '
-# 
-# fitDEP <- lavaan(DEP_uni, data=data, estimator='mlr',missing='fiml')
-# summary(fitDEP, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE) 
-# 
-# 
-# BDCS<-'
-# 
-# left_AMYGlv_BL=~1*left_AMYG_BL        
-# left_AMYGlv_Y2=~1*left_AMYG_Y2        
-# left_AMYGlv_Y4=~1*left_AMYG_Y4        
-# left_AMYGlv_Y6=~1*left_AMYG_Y6        
-# 
-# DEPlv_BL=~1*DEP_BL        
-# DEPlv_Y2=~1*DEP_Y2        
-# DEPlv_Y4=~1*DEP_Y4        
-# DEPlv_Y6=~1*DEP_Y6        
-# 
-# ##### The following parameters capture the core assumptions of the LCS and should not generally be modified
-# 
-# left_AMYGlv_Y2 ~ 1*left_AMYGlv_BL     # This parameter regresses COG_T2 perfectly on COG_T1
-# left_AMYGlv_Y4 ~ 1*left_AMYGlv_Y2     # This parameter regresses COG_T3 perfectly on COG_T2
-# left_AMYGlv_Y6 ~ 1*left_AMYGlv_Y4     # This parameter regresses COG_T4 perfectly on COG_T3
-# 
-# DEPlv_Y2 ~ 1*DEPlv_BL     # This parameter regresses NEU_T2 perfectly on NEU_T1
-# DEPlv_Y4 ~ 1*DEPlv_Y2     # This parameter regresses NEU_T3 perfectly on NEU_T2
-# DEPlv_Y6 ~ 1*DEPlv_Y4     # This parameter regresses NEU_T4 perfectly on NEU_T3
-# 
-# dleft_AMYG1 =~ 1*left_AMYGlv_Y2       # This defines the change score as measured perfectly by scores on COG_T2
-# dleft_AMYG2 =~ 1*left_AMYGlv_Y4       # This defines the change score as measured perfectly by scores on COG_T3
-# dleft_AMYG3 =~ 1*left_AMYGlv_Y6       # This defines the change score as measured perfectly by scores on COG_T4
-# 
-# dDEP1 =~ 1*DEPlv_Y2       # This defines the change score as measured perfectly by scores on NEU_T2
-# dDEP2 =~ 1*DEPlv_Y4       # This defines the change score as measured perfectly by scores on NEU_T3
-# dDEP3 =~ 1*DEPlv_Y6       # This defines the change score as measured perfectly by scores on NEU_T4
-# 
-# left_AMYG_BL~~res_left_AMYGvar*left_AMYG_BL          # This estimates the COG residual variances 
-# left_AMYG_Y2~~res_left_AMYGvar*left_AMYG_Y2          # This estimates the COG residual variances 
-# left_AMYG_Y4~~res_left_AMYGvar*left_AMYG_Y4          # This estimates the COG residual variances 
-# left_AMYG_Y6~~res_left_AMYGvar*left_AMYG_Y6          # This estimates the COG residual variances 
-# 
-# DEP_BL~~resDEPvar*DEP_BL          # This estimates the NEU residual variances 
-# DEP_Y2~~resDEPvar*DEP_Y2          # This estimates the NEU residual variances 
-# DEP_Y4~~resDEPvar*DEP_Y4          # This estimates the NEU residual variances 
-# DEP_Y6~~resDEPvar*DEP_Y6          # This estimates the NEU residual variances 
-# 
-# #Dynamics
-# 
-# dDEP1~DEPselfFB*DEPlv_BL       # This estimates the NEU self-feedback parameter (equality constrained across timepoints)
-# dDEP2~DEPselfFB*DEPlv_Y2       # This estimates the NEU self-feedback parameter (equality constrained across timepoints) 
-# dDEP3~DEPselfFB*DEPlv_Y4       # This estimates the NEU self-feedback parameter (equality constrained across timepoints)
-# 
-# dleft_AMYG1~left_AMYGselfFB*left_AMYGlv_BL       # This estimates the COG self-feedback parameter (equality constrained across timepoints)
-# dleft_AMYG2~left_AMYGselfFB*left_AMYGlv_Y2       # This estimates the COG self-feedback parameter (equality constrained across timepoints) 
-# dleft_AMYG3~left_AMYGselfFB*left_AMYGlv_Y4       # This estimates the COG self-feedback parameter (equality constrained across timepoints)
-# 
-# dDEP1~leftAMYG_to_DEP*left_AMYGlv_BL         # This estimates the COG to NEU coupling parameter 
-# dDEP2~leftAMYG_to_DEP*left_AMYGlv_Y2         # This estimates the COG to NEU coupling parameter 
-# dDEP3~leftAMYG_to_DEP*left_AMYGlv_Y4         # This estimates the COG to NEU coupling parameter 
-# 
-# dleft_AMYG1~DEP_to_left_AMYG*DEPlv_BL        # This estimates the NEU to COG coupling parameter 
-# dleft_AMYG2~DEP_to_left_AMYG*DEPlv_Y2        # This estimates the NEU to COG coupling parameter 
-# dleft_AMYG3~DEP_to_left_AMYG*DEPlv_Y4        # This estimates the NEU to COG coupling parameter 
-# 
-# 
-# ileft_AMYG=~1*left_AMYGlv_T1                   # This defines the COG intercept measurement model
-# sleft_AMYG=~1*dleft_AMYG1+1*dleft_AMYG2+1*dleft_AMYG3      # This defines the COG slope measurement model
-# ileft_AMYG~1                             # This estimates the COG intercept intercept (mean)
-# ileft_AMYG~~ileft_AMYG                         # This estimates the COG intercept variance
-# sleft_AMYG~1                             # This estimates the COG slope intercept
-# sleft_AMYG~~sleft_AMYG                         # This estimates the COG slope variance
-# 
-# iDEP=~1*DEPlv_T1                   # This defines the NEU slope measurement model
-# sDEP=~1*dDEP1+1*dDEP2+1*dDEP3      # This defines the NEU slope measurement model
-# iDEP~1                             # This estimates the NEU intercept intercept (mean)
-# iDEP~~iDEP                         # This estimates the NEU intercept variance
-# sDEP~1                             # This estimates the NEU slope intercept
-# sDEP~~sDEP                         # This estimates the NEU slope variance
-# 
-# iDEP~~sDEP                      # This estimates the iNEU sNEU covariance
-# iDEP~~sleft_AMYG                      # This estimates the iNEU sCOG covariance
-# iDEP~~ileft_AMYG                      # This estimates the iNEU iCOG covariance
-# ileft_AMYG~~sleft_AMYG                      # This estimates the iCOG sCOG covariance        
-# ileft_AMYG~~sDEP                      # This estimates the iCOG sNEU covariance
-# sleft_AMYG~~sDEP                      # This estimates the sCOG sNEU covariance  
-# 
-# '
-# 
-# fitBDCS <- lavaan(BDCS, data=simdatBDCS, estimator='mlr',missing='fiml')
-# summary(fitBDCS, fit.measures=TRUE, standardized=TRUE, rsquare=TRUE) 
-# 
-# 
+harm_data <- read_parquet(file.path(
+  proj_root,
+  "data/processed/harmonized_tabular.parquet"
+)) %>%
+  mutate(
+    age_centered = age - mean(age),
+    sex_coded = ifelse(sex == "female", 1, ifelse(sex == "male", 0, sex))
+  )
+
+nonharm_data <- read_parquet(file.path(
+  proj_root,
+  "data/processed/processed_tabular.parquet"
+)) %>%
+  mutate(
+    age_centered = age - mean(age),
+    sex_coded = ifelse(sex == "female", 1, ifelse(sex == "male", 0, sex))
+  )
+
+# --- model spec --------------------------------------------------------
+
+data_map <- list(
+  harmonized = harm_data,
+  nonharmonized = nonharm_data
+)
+
+y_var <- "mh_y_bpm__int_year_4"
+x_var <- "baseline_maternal_asr_int"
+cov_base <- "sex_coded"
+icv_var <- "mr_y_smri__vol__aseg__icv_sum_year_2"
+
+spec <- tribble(
+  ~structure    , ~side , ~m_var                                    ,
+  "amygdala"    , "lh"  , "mr_y_smri__vol__aseg__ag__lh_sum_year_2" ,
+  "amygdala"    , "rh"  , "mr_y_smri__vol__aseg__ag__rh_sum_year_2" ,
+  "hippocampus" , "lh"  , "mr_y_smri__vol__aseg__hc__lh_sum_year_2" ,
+  "hippocampus" , "rh"  , "mr_y_smri__vol__aseg__hc__rh_sum_year_2"
+) |>
+  crossing(
+    dataset = names(data_map),
+    icv = c(FALSE, TRUE)
+  ) |>
+  mutate(
+    cov = map(icv, ~ if (.x) c(cov_base, icv_var) else cov_base),
+    model_id = paste(
+      dataset,
+      structure,
+      side,
+      ifelse(icv, "with_icv", "no_icv"),
+      sep = "_"
+    )
+  )
+
+# --- output ------------------------------------------------------------
+
+split_process_runs <- function(lines) {
+  idx <- grep("^\\*{10,}\\s*PROCESS for R", lines)
+  if (length(idx) == 0) {
+    return(list(lines))
+  }
+  idx <- c(idx, length(lines) + 1)
+
+  runs <- lapply(seq_len(length(idx) - 1), function(i) {
+    lines[idx[i]:(idx[i + 1] - 1)]
+  })
+  runs[lengths(runs) > 0]
+}
+
+remove_boot_progress <- function(lines) {
+  start <- grep("^Bootstrapping progress:", lines)
+  if (length(start) == 0) {
+    return(lines)
+  }
+  start <- start[1]
+
+  after <- lines[start:length(lines)]
+  end_rel <- grep("100%\\s*$", after)
+  if (length(end_rel) == 0) {
+    return(lines[-start])
+  }
+
+  end <- start + end_rel[1] - 1
+  lines[-(start:end)]
+}
+
+extract_results_chunk <- function(lines) {
+  start <- grep("^\\*{5,}\\s*Outcome Variable:", lines)
+  if (length(start) == 0) {
+    start <- grep("^Outcome Variable:", lines)
+  }
+  if (length(start) == 0) {
+    return(character())
+  }
+  start <- start[1]
+
+  end <- grep("^\\*{5,}\\s*ANALYSIS NOTES AND ERRORS", lines)
+  end <- end[end > start]
+  if (length(end) > 0) {
+    end <- end[1] - 1
+    chunk <- lines[start:end]
+    chunk <- remove_boot_progress(chunk)
+    return(chunk)
+  }
+
+  chunk <- lines[start:length(lines)]
+  chunk <- remove_boot_progress(chunk)
+  chunk
+}
+
+capture_process <- function(data, cov, y, x, m, boot = 10000) {
+  all_lines <- capture.output(
+    process(
+      data = data,
+      cov = cov,
+      y = y,
+      x = x,
+      m = m,
+      boot = boot,
+      model = 4,
+      total = 1
+    )
+  )
+
+  runs <- split_process_runs(all_lines)
+
+  cleaned <- lapply(runs, function(r) {
+    chunk <- extract_results_chunk(r)
+    chunk <- chunk[nzchar(chunk)]
+    paste(chunk, collapse = "\n")
+  })
+
+  paste(cleaned, collapse = "\n\n-----\n\n")
+}
+
+# --- run models --------------------------------------------------------
+
+models <- spec |>
+  mutate(
+    output = pmap_chr(
+      list(
+        data = map(dataset, ~ data_map[[.x]]),
+        cov = cov,
+        y = rep(y_var, n()),
+        x = rep(x_var, n()),
+        m = m_var
+      ),
+      capture_process
+    )
+  )
+
+# --- html tabs ---------------------------------------------------------
+
+make_tabs_html <- function(df, title = "process model outputs") {
+  stopifnot(all(c("model_id", "output") %in% names(df)))
+
+  tab_ids <- paste0("tab_", seq_len(nrow(df)))
+
+  esc <- function(x) {
+    x <- gsub("&", "&amp;", x, fixed = TRUE)
+    x <- gsub("<", "&lt;", x, fixed = TRUE)
+    x <- gsub(">", "&gt;", x, fixed = TRUE)
+    x
+  }
+
+  buttons <- Map(
+    function(id, label, active) {
+      tags$button(
+        type = "button",
+        class = paste("tab-btn", if (active) "active" else ""),
+        `data-tab` = id,
+        label
+      )
+    },
+    tab_ids,
+    df$model_id,
+    seq_len(nrow(df)) == 1
+  )
+
+  panels <- Map(
+    function(id, content, active) {
+      tags$div(
+        id = id,
+        class = paste("tab-panel", if (active) "active" else ""),
+        tags$pre(class = "code", HTML(esc(content)))
+      )
+    },
+    tab_ids,
+    df$output,
+    seq_len(nrow(df)) == 1
+  )
+
+  tags$html(
+    tags$head(
+      tags$meta(charset = "utf-8"),
+      tags$title(title),
+      tags$style(HTML(
+        "
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 20px; }
+        h1 { font-size: 18px; margin: 0 0 12px 0; }
+        .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .tab-btn {
+          border: 1px solid #ccc; background: #f7f7f7; padding: 6px 10px; border-radius: 8px;
+          cursor: pointer; font-size: 12px;
+        }
+        .tab-btn.active { background: #e9e9e9; border-color: #999; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        pre.code {
+          white-space: pre-wrap;
+          background: #0b0b0b;
+          color: #f2f2f2;
+          padding: 12px;
+          border-radius: 12px;
+          border: 1px solid #222;
+          overflow-x: auto;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+          font-size: 12px;
+          line-height: 1.35;
+        }
+      "
+      )),
+      tags$script(HTML(
+        "
+        document.addEventListener('click', function(e) {
+          if (!e.target.classList.contains('tab-btn')) return;
+          const tabId = e.target.getAttribute('data-tab');
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          e.target.classList.add('active');
+          document.getElementById(tabId).classList.add('active');
+        });
+      "
+      ))
+    ),
+    tags$body(
+      tags$h1(title),
+      tags$div(class = "tabs", buttons),
+      tags$div(panels)
+    )
+  )
+}
+
+out_path <- file.path(proj_root, "outputs", "process_tabs.html")
+dir.create(dirname(out_path), recursive = TRUE, showWarnings = FALSE)
+
+html <- make_tabs_html(
+  models,
+  title = "depressed-brain multiverse analysis: process outputs"
+)
+htmltools::save_html(html, file = out_path)
+
+message("wrote: ", out_path)
+utils::browseURL(out_path)
