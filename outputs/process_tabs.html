@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+
+  <meta charset="utf-8"/>
+  <title>depressed-brain multiverse analysis: process outputs</title>
+  <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 20px; }
+        h1 { font-size: 18px; margin: 0 0 12px 0; }
+        .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .tab-btn {
+          border: 1px solid #ccc; background: #f7f7f7; padding: 6px 10px; border-radius: 8px;
+          cursor: pointer; font-size: 12px;
+        }
+        .tab-btn.active { background: #e9e9e9; border-color: #999; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        pre.code {
+          white-space: pre-wrap;
+          background: #0b0b0b;
+          color: #f2f2f2;
+          padding: 12px;
+          border-radius: 12px;
+          border: 1px solid #222;
+          overflow-x: auto;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+          font-size: 12px;
+          line-height: 1.35;
+        }
+      </style>
+  <script>
+        document.addEventListener('click', function(e) {
+          if (!e.target.classList.contains('tab-btn')) return;
+          const tabId = e.target.getAttribute('data-tab');
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          e.target.classList.add('active');
+          document.getElementById(tabId).classList.add('active');
+        });
+      </script>
+</head>
+<html>
+  <body>
+    <h1>depressed-brain multiverse analysis: process outputs</h1>
+    <div class="tabs">
+      <button type="button" class="tab-btn active" data-tab="tab_1">harmonized_amygdala_lh_no_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_2">harmonized_amygdala_lh_with_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_3">nonharmonized_amygdala_lh_no_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_4">nonharmonized_amygdala_lh_with_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_5">harmonized_amygdala_rh_no_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_6">harmonized_amygdala_rh_with_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_7">nonharmonized_amygdala_rh_no_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_8">nonharmonized_amygdala_rh_with_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_9">harmonized_hippocampus_lh_no_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_10">harmonized_hippocampus_lh_with_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_11">nonharmonized_hippocampus_lh_no_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_12">nonharmonized_hippocampus_lh_with_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_13">harmonized_hippocampus_rh_no_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_14">harmonized_hippocampus_rh_with_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_15">nonharmonized_hippocampus_rh_no_icv</button>
+      <button type="button" class="tab-btn " data-tab="tab_16">nonharmonized_hippocampus_rh_with_icv</button>
+    </div>
+    <div>
+      <div id="tab_1" class="tab-panel active">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__ag__lh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.3784    0.1432 41524.0734  157.0147    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                  1839.4233    8.3530  220.2117    0.0000
+baseline_maternal_asr_int   -1.0928    0.5600   -1.9512    0.0512
+sex_coded                 -166.6791    9.4338  -17.6683    0.0000
+                               LLCI      ULCI
+constant                  1823.0412 1855.8054
+baseline_maternal_asr_int   -2.1911    0.0056
+sex_coded                 -185.1809 -148.1773
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2938    0.0863    6.4602   59.1516    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                   0.2416    0.5394
+baseline_maternal_asr_int                  0.0232    0.0070
+mr_y_smri__vol__aseg__ag__lh_sum_year_2    0.0007    0.0003
+sex_coded                                  1.6179    0.1271
+                                                t         p
+constant                                   0.4478    0.6544
+baseline_maternal_asr_int                  3.3216    0.0009
+mr_y_smri__vol__aseg__ag__lh_sum_year_2    2.2686    0.0234
+sex_coded                                 12.7327    0.0000
+                                             LLCI      ULCI
+constant                                  -0.8164    1.2995
+baseline_maternal_asr_int                  0.0095    0.0369
+mr_y_smri__vol__aseg__ag__lh_sum_year_2    0.0001    0.0012
+sex_coded                                  1.3687    1.8671
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2895    0.0838    6.4744   85.9644    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                     1.4423    0.1043   13.8282    0.0000
+baseline_maternal_asr_int    0.0225    0.0070    3.2193    0.0013
+sex_coded                    1.5091    0.1178   12.8109    0.0000
+                               LLCI      ULCI
+constant                     1.2377    1.6469
+baseline_maternal_asr_int    0.0088    0.0362
+sex_coded                    1.2781    1.7401
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0225    0.0070    3.2193    0.0013    0.0088    0.0362
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0232    0.0070    3.3216    0.0009    0.0095    0.0369
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0007    0.0005
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0018    0.0000</pre>
+      </div>
+      <div id="tab_2" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__ag__lh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.6016    0.3620 30938.2965  355.1304    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                              488.5311   53.7222    9.0937
+baseline_maternal_asr_int              -0.5699    0.4838   -1.1779
+sex_coded                             -57.5739    9.2084   -6.2523
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0008    0.0000   25.3755
+                                             p      LLCI      ULCI
+constant                                0.0000  383.1697  593.8925
+baseline_maternal_asr_int               0.2390   -1.5189    0.3790
+sex_coded                               0.0000  -75.6338  -39.5141
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0008    0.0009
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2941    0.0865    6.4624   44.4339    4.0000 1877.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -0.0989    0.7933
+baseline_maternal_asr_int                  0.0233    0.0070
+mr_y_smri__vol__aseg__ag__lh_sum_year_2    0.0006    0.0003
+sex_coded                                  1.6436    0.1345
+mr_y_smri__vol__aseg__icv_sum_year_2       0.0000    0.0000
+                                                t         p
+constant                                  -0.1247    0.9008
+baseline_maternal_asr_int                  3.3336    0.0009
+mr_y_smri__vol__aseg__ag__lh_sum_year_2    1.6616    0.0968
+sex_coded                                 12.2234    0.0000
+mr_y_smri__vol__aseg__icv_sum_year_2       0.5854    0.5584
+                                             LLCI      ULCI
+constant                                  -1.6548    1.4570
+baseline_maternal_asr_int                  0.0096    0.0370
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0001    0.0012
+sex_coded                                  1.3799    1.9073
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2918    0.0852    6.4685   58.2703    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                                0.1718    0.7768    0.2212
+baseline_maternal_asr_int               0.0230    0.0070    3.2881
+sex_coded                               1.6117    0.1331   12.1045
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0000    1.6505
+                                             p      LLCI      ULCI
+constant                                0.8250   -1.3517    1.6953
+baseline_maternal_asr_int               0.0010    0.0093    0.0367
+sex_coded                               0.0000    1.3506    1.8728
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0990   -0.0000    0.0000
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0230    0.0070    3.2881    0.0010    0.0093    0.0367
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0233    0.0070    3.3336    0.0009    0.0096    0.0370
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0003    0.0004
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0012    0.0002</pre>
+      </div>
+      <div id="tab_3" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__ag__lh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.3725    0.1388 50279.4301  151.3651    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                  1849.9451    9.1915  201.2669    0.0000
+baseline_maternal_asr_int   -1.9026    0.6163   -3.0874    0.0020
+sex_coded                 -178.7193   10.3808  -17.2163    0.0000
+                               LLCI      ULCI
+constant                  1831.9184 1867.9717
+baseline_maternal_asr_int   -3.1112   -0.6940
+sex_coded                 -199.0785 -158.3602
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2927    0.0857    6.4648   58.6607    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                   0.4993    0.4950
+baseline_maternal_asr_int                  0.0235    0.0070
+mr_y_smri__vol__aseg__ag__lh_sum_year_2    0.0005    0.0003
+sex_coded                                  1.6002    0.1267
+                                                t         p
+constant                                   1.0086    0.3133
+baseline_maternal_asr_int                  3.3520    0.0008
+mr_y_smri__vol__aseg__ag__lh_sum_year_2    1.9487    0.0515
+sex_coded                                 12.6344    0.0000
+                                             LLCI      ULCI
+constant                                  -0.4715    1.4701
+baseline_maternal_asr_int                  0.0097    0.0372
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0000    0.0010
+sex_coded                                  1.3518    1.8486
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2895    0.0838    6.4744   85.9644    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                     1.4423    0.1043   13.8282    0.0000
+baseline_maternal_asr_int    0.0225    0.0070    3.2193    0.0013
+sex_coded                    1.5091    0.1178   12.8109    0.0000
+                               LLCI      ULCI
+constant                     1.2377    1.6469
+baseline_maternal_asr_int    0.0088    0.0362
+sex_coded                    1.2781    1.7401
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0225    0.0070    3.2193    0.0013    0.0088    0.0362
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0235    0.0070    3.3520    0.0008    0.0097    0.0372
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0010    0.0006
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0023    0.0000</pre>
+      </div>
+      <div id="tab_4" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__ag__lh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.6528    0.4262 33519.2217  464.8781    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                              285.0292   51.5764    5.5264
+baseline_maternal_asr_int              -0.8299    0.5044   -1.6453
+sex_coded                             -44.1505    9.5443   -4.6259
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0010    0.0000   30.6681
+                                             p      LLCI      ULCI
+constant                                0.0000  183.8762  386.1822
+baseline_maternal_asr_int               0.1001   -1.8191    0.1593
+sex_coded                               0.0000  -62.8691  -25.4320
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0009    0.0010
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2928    0.0858    6.4677   44.0146    4.0000 1877.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                   0.2921    0.7222
+baseline_maternal_asr_int                  0.0236    0.0070
+mr_y_smri__vol__aseg__ag__lh_sum_year_2    0.0004    0.0003
+sex_coded                                  1.6166    0.1333
+mr_y_smri__vol__aseg__icv_sum_year_2       0.0000    0.0000
+                                                t         p
+constant                                   0.4044    0.6860
+baseline_maternal_asr_int                  3.3629    0.0008
+mr_y_smri__vol__aseg__ag__lh_sum_year_2    1.3626    0.1732
+sex_coded                                 12.1246    0.0000
+mr_y_smri__vol__aseg__icv_sum_year_2       0.3941    0.6936
+                                             LLCI      ULCI
+constant                                  -1.1244    1.7086
+baseline_maternal_asr_int                  0.0098    0.0373
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0002    0.0011
+sex_coded                                  1.3551    1.8781
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2913    0.0848    6.4707   58.0407    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                                0.4166    0.7166    0.5813
+baseline_maternal_asr_int               0.0232    0.0070    3.3128
+sex_coded                               1.5973    0.1326   12.0452
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0000    1.4468
+                                             p      LLCI      ULCI
+constant                                0.5611   -0.9888    1.8220
+baseline_maternal_asr_int               0.0009    0.0095    0.0370
+sex_coded                               0.0000    1.3372    1.8574
+mr_y_smri__vol__aseg__icv_sum_year_2    0.1481   -0.0000    0.0000
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0232    0.0070    3.3128    0.0009    0.0095    0.0370
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0236    0.0070    3.3629    0.0008    0.0098    0.0373
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0004    0.0004
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__ag__lh_sum_year_2   -0.0013    0.0002</pre>
+      </div>
+      <div id="tab_5" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__ag__rh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.3871    0.1498 39535.1222  165.5888    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                  1946.0551    8.1505  238.7659    0.0000
+baseline_maternal_asr_int   -1.6549    0.5465   -3.0285    0.0025
+sex_coded                 -166.0172    9.2051  -18.0354    0.0000
+                               LLCI      ULCI
+constant                  1930.0702 1962.0401
+baseline_maternal_asr_int   -2.7266   -0.5832
+sex_coded                 -184.0705 -147.9640
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2923    0.0854    6.4666   58.4709    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                   0.4031    0.5836
+baseline_maternal_asr_int                  0.0234    0.0070
+mr_y_smri__vol__aseg__ag__rh_sum_year_2    0.0005    0.0003
+sex_coded                                  1.5978    0.1275
+                                                t         p
+constant                                   0.6908    0.4898
+baseline_maternal_asr_int                  3.3395    0.0009
+mr_y_smri__vol__aseg__ag__rh_sum_year_2    1.8099    0.0705
+sex_coded                                 12.5304    0.0000
+                                             LLCI      ULCI
+constant                                  -0.7414    1.5476
+baseline_maternal_asr_int                  0.0097    0.0371
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0000    0.0011
+sex_coded                                  1.3477    1.8478
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2895    0.0838    6.4744   85.9644    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                     1.4423    0.1043   13.8282    0.0000
+baseline_maternal_asr_int    0.0225    0.0070    3.2193    0.0013
+sex_coded                    1.5091    0.1178   12.8109    0.0000
+                               LLCI      ULCI
+constant                     1.2377    1.6469
+baseline_maternal_asr_int    0.0088    0.0362
+sex_coded                    1.2781    1.7401
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0225    0.0070    3.2193    0.0013    0.0088    0.0362
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0234    0.0070    3.3395    0.0009    0.0097    0.0371
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0009    0.0006
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0022    0.0001</pre>
+      </div>
+      <div id="tab_6" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__ag__rh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.6458    0.4171 27120.4715  447.9691    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                              483.4018   50.2984    9.6107
+baseline_maternal_asr_int              -1.0888    0.4530   -2.4036
+sex_coded                             -47.8857    8.6216   -5.5542
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0009    0.0000   29.3450
+                                             p      LLCI      ULCI
+constant                                0.0000  384.7552  582.0485
+baseline_maternal_asr_int               0.0163   -1.9773   -0.2004
+sex_coded                               0.0000  -64.7945  -30.9768
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0009    0.0010
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2928    0.0857    6.4680   43.9911    4.0000 1877.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -0.0122    0.7956
+baseline_maternal_asr_int                  0.0234    0.0070
+mr_y_smri__vol__aseg__ag__rh_sum_year_2    0.0004    0.0004
+sex_coded                                  1.6299    0.1342
+mr_y_smri__vol__aseg__icv_sum_year_2       0.0000    0.0000
+                                                t         p
+constant                                  -0.0153    0.9878
+baseline_maternal_asr_int                  3.3423    0.0008
+mr_y_smri__vol__aseg__ag__rh_sum_year_2    1.0679    0.2857
+sex_coded                                 12.1425    0.0000
+mr_y_smri__vol__aseg__icv_sum_year_2       0.7679    0.4426
+                                             LLCI      ULCI
+constant                                  -1.5726    1.5483
+baseline_maternal_asr_int                  0.0097    0.0372
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0003    0.0011
+sex_coded                                  1.3667    1.8932
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2918    0.0852    6.4685   58.2703    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                                0.1718    0.7768    0.2212
+baseline_maternal_asr_int               0.0230    0.0070    3.2881
+sex_coded                               1.6117    0.1331   12.1045
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0000    1.6505
+                                             p      LLCI      ULCI
+constant                                0.8250   -1.3517    1.6953
+baseline_maternal_asr_int               0.0010    0.0093    0.0367
+sex_coded                               0.0000    1.3506    1.8728
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0990   -0.0000    0.0000
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0230    0.0070    3.2881    0.0010    0.0093    0.0367
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0234    0.0070    3.3423    0.0008    0.0097    0.0372
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0004    0.0005
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0015    0.0004</pre>
+      </div>
+      <div id="tab_7" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__ag__rh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.3917    0.1534 41361.2977  170.2948    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                  1953.1287    8.3366  234.2839    0.0000
+baseline_maternal_asr_int   -1.9588    0.5589   -3.5045    0.0005
+sex_coded                 -171.6018    9.4153  -18.2259    0.0000
+                               LLCI      ULCI
+constant                  1936.7788 1969.4787
+baseline_maternal_asr_int   -3.0550   -0.8626
+sex_coded                 -190.0673 -153.1363
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2926    0.0856    6.4651   58.6312    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                   0.3564    0.5729
+baseline_maternal_asr_int                  0.0236    0.0070
+mr_y_smri__vol__aseg__ag__rh_sum_year_2    0.0006    0.0003
+sex_coded                                  1.6045    0.1277
+                                                t         p
+constant                                   0.6220    0.5340
+baseline_maternal_asr_int                  3.3665    0.0008
+mr_y_smri__vol__aseg__ag__rh_sum_year_2    1.9277    0.0540
+sex_coded                                 12.5652    0.0000
+                                             LLCI      ULCI
+constant                                  -0.7672    1.4799
+baseline_maternal_asr_int                  0.0099    0.0374
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0000    0.0011
+sex_coded                                  1.3541    1.8549
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2895    0.0838    6.4744   85.9644    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                     1.4423    0.1043   13.8282    0.0000
+baseline_maternal_asr_int    0.0225    0.0070    3.2193    0.0013
+sex_coded                    1.5091    0.1178   12.8109    0.0000
+                               LLCI      ULCI
+constant                     1.2377    1.6469
+baseline_maternal_asr_int    0.0088    0.0362
+sex_coded                    1.2781    1.7401
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0225    0.0070    3.2193    0.0013    0.0088    0.0362
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0236    0.0070    3.3665    0.0008    0.0099    0.0374
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0011    0.0006
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0025    0.0000</pre>
+      </div>
+      <div id="tab_8" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__ag__rh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.6447    0.4156 28566.6073  445.2404    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                              585.7367   47.6138   12.3018
+baseline_maternal_asr_int              -1.0215    0.4656   -2.1938
+sex_coded                             -54.0182    8.8110   -6.1308
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0009    0.0000   29.0273
+                                             p      LLCI      ULCI
+constant                                0.0000  492.3551  679.1183
+baseline_maternal_asr_int               0.0284   -1.9347   -0.1083
+sex_coded                               0.0000  -71.2987  -36.7378
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0008    0.0009
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2928    0.0857    6.4678   44.0055    4.0000 1877.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                   0.1419    0.7448
+baseline_maternal_asr_int                  0.0237    0.0070
+mr_y_smri__vol__aseg__ag__rh_sum_year_2    0.0005    0.0003
+sex_coded                                  1.6226    0.1339
+mr_y_smri__vol__aseg__icv_sum_year_2       0.0000    0.0000
+                                                t         p
+constant                                   0.1906    0.8489
+baseline_maternal_asr_int                  3.3776    0.0007
+mr_y_smri__vol__aseg__ag__rh_sum_year_2    1.3505    0.1770
+sex_coded                                 12.1183    0.0000
+mr_y_smri__vol__aseg__icv_sum_year_2       0.4508    0.6522
+                                             LLCI      ULCI
+constant                                  -1.3187    1.6025
+baseline_maternal_asr_int                  0.0099    0.0375
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0002    0.0011
+sex_coded                                  1.3600    1.8852
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2913    0.0848    6.4707   58.0407    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                                0.4166    0.7166    0.5813
+baseline_maternal_asr_int               0.0232    0.0070    3.3128
+sex_coded                               1.5973    0.1326   12.0452
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0000    1.4468
+                                             p      LLCI      ULCI
+constant                                0.5611   -0.9888    1.8220
+baseline_maternal_asr_int               0.0009    0.0095    0.0370
+sex_coded                               0.0000    1.3372    1.8574
+mr_y_smri__vol__aseg__icv_sum_year_2    0.1481   -0.0000    0.0000
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0232    0.0070    3.3128    0.0009    0.0095    0.0370
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0237    0.0070    3.3776    0.0007    0.0099    0.0375
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0005    0.0004
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__ag__rh_sum_year_2   -0.0015    0.0002</pre>
+      </div>
+      <div id="tab_9" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__hc__lh_sum_year_2
+Model Summary: 
+          R      R-sq         MSE         F       df1       df2
+     0.3509    0.1232 138900.0424  131.9625    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                  4212.9237   15.2772  275.7662    0.0000
+baseline_maternal_asr_int   -1.3905    1.0243   -1.3575    0.1748
+sex_coded                 -279.9474   17.2539  -16.2252    0.0000
+                               LLCI      ULCI
+constant                  4182.9617 4242.8857
+baseline_maternal_asr_int   -3.3993    0.6183
+sex_coded                 -313.7862 -246.1086
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.3010    0.0906    6.4302   62.3461    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -1.0255    0.6694
+baseline_maternal_asr_int                  0.0233    0.0070
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    0.0006    0.0002
+sex_coded                                  1.6731    0.1253
+                                                t         p
+constant                                  -1.5319    0.1257
+baseline_maternal_asr_int                  3.3456    0.0008
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    3.7319    0.0002
+sex_coded                                 13.3474    0.0000
+                                             LLCI      ULCI
+constant                                  -2.3383    0.2874
+baseline_maternal_asr_int                  0.0097    0.0370
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    0.0003    0.0009
+sex_coded                                  1.4272    1.9189
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2895    0.0838    6.4744   85.9644    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                     1.4423    0.1043   13.8282    0.0000
+baseline_maternal_asr_int    0.0225    0.0070    3.2193    0.0013
+sex_coded                    1.5091    0.1178   12.8109    0.0000
+                               LLCI      ULCI
+constant                     1.2377    1.6469
+baseline_maternal_asr_int    0.0088    0.0362
+sex_coded                    1.2781    1.7401
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0225    0.0070    3.2193    0.0013    0.0088    0.0362
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0233    0.0070    3.3456    0.0008    0.0097    0.0370
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__hc__lh_sum_year_2   -0.0008    0.0007
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__hc__lh_sum_year_2   -0.0023    0.0004</pre>
+      </div>
+      <div id="tab_10" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__hc__lh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.6743    0.4547 86424.5019  522.0247    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                             1206.2207   89.7892   13.4339
+baseline_maternal_asr_int              -0.2268    0.8087   -0.2805
+sex_coded                             -37.1103   15.3906   -2.4112
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0019    0.0001   33.7920
+                                             p      LLCI      ULCI
+constant                                0.0000 1030.1237 1382.3177
+baseline_maternal_asr_int               0.7791   -1.8128    1.3592
+sex_coded                               0.0160  -67.2948   -6.9258
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0018    0.0020
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.3015    0.0909    6.4314   46.9154    4.0000 1877.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -0.6545    0.8109
+baseline_maternal_asr_int                  0.0232    0.0070
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    0.0007    0.0002
+sex_coded                                  1.6371    0.1330
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+                                                t         p
+constant                                  -0.8070    0.4197
+baseline_maternal_asr_int                  3.3198    0.0009
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    3.4412    0.0006
+sex_coded                                 12.3119    0.0000
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.8107    0.4176
+                                             LLCI      ULCI
+constant                                  -2.2449    0.9360
+baseline_maternal_asr_int                  0.0095    0.0368
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    0.0003    0.0011
+sex_coded                                  1.3763    1.8979
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2918    0.0852    6.4685   58.2703    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                                0.1718    0.7768    0.2212
+baseline_maternal_asr_int               0.0230    0.0070    3.2881
+sex_coded                               1.6117    0.1331   12.1045
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0000    1.6505
+                                             p      LLCI      ULCI
+constant                                0.8250   -1.3517    1.6953
+baseline_maternal_asr_int               0.0010    0.0093    0.0367
+sex_coded                               0.0000    1.3506    1.8728
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0990   -0.0000    0.0000
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0230    0.0070    3.2881    0.0010    0.0093    0.0367
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0232    0.0070    3.3198    0.0009    0.0095    0.0368
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__hc__lh_sum_year_2   -0.0002    0.0006
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__hc__lh_sum_year_2   -0.0014    0.0010</pre>
+      </div>
+      <div id="tab_11" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__hc__lh_sum_year_2
+Model Summary: 
+          R      R-sq         MSE         F       df1       df2
+     0.3628    0.1316 148031.3793  142.3836    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                  4235.9483   15.7713  268.5854    0.0000
+baseline_maternal_asr_int   -2.4675    1.0574   -2.3335    0.0197
+sex_coded                 -298.9094   17.8120  -16.7813    0.0000
+                               LLCI      ULCI
+constant                  4205.0171 4266.8795
+baseline_maternal_asr_int   -4.5413   -0.3937
+sex_coded                 -333.8428 -263.9760
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.3017    0.0910    6.4269   62.6973    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -1.0425    0.6522
+baseline_maternal_asr_int                  0.0240    0.0070
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    0.0006    0.0002
+sex_coded                                  1.6844    0.1259
+                                                t         p
+constant                                  -1.5983    0.1101
+baseline_maternal_asr_int                  3.4339    0.0006
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    3.8590    0.0001
+sex_coded                                 13.3842    0.0000
+                                             LLCI      ULCI
+constant                                  -2.3216    0.2367
+baseline_maternal_asr_int                  0.0103    0.0376
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    0.0003    0.0009
+sex_coded                                  1.4376    1.9313
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2895    0.0838    6.4744   85.9644    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                     1.4423    0.1043   13.8282    0.0000
+baseline_maternal_asr_int    0.0225    0.0070    3.2193    0.0013
+sex_coded                    1.5091    0.1178   12.8109    0.0000
+                               LLCI      ULCI
+constant                     1.2377    1.6469
+baseline_maternal_asr_int    0.0088    0.0362
+sex_coded                    1.2781    1.7401
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0225    0.0070    3.2193    0.0013    0.0088    0.0362
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0240    0.0070    3.4339    0.0006    0.0103    0.0376
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__hc__lh_sum_year_2   -0.0014    0.0008
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__hc__lh_sum_year_2   -0.0032   -0.0002</pre>
+      </div>
+      <div id="tab_12" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__hc__lh_sum_year_2
+Model Summary: 
+          R      R-sq        MSE         F       df1       df2
+     0.6861    0.4707 90277.7805  556.6662    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                             1331.3212   84.6436   15.7285
+baseline_maternal_asr_int              -0.4764    0.8278   -0.5756
+sex_coded                             -49.1373   15.6635   -3.1371
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0018    0.0001   34.6851
+                                             p      LLCI      ULCI
+constant                                0.0000 1165.3158 1497.3267
+baseline_maternal_asr_int               0.5650   -2.0998    1.1470
+sex_coded                               0.0017  -79.8569  -18.4177
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0017    0.0019
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.3029    0.0918    6.4252   47.4136    4.0000 1877.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -0.5635    0.7597
+baseline_maternal_asr_int                  0.0236    0.0070
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    0.0007    0.0002
+sex_coded                                  1.6335    0.1325
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+                                                t         p
+constant                                  -0.7417    0.4583
+baseline_maternal_asr_int                  3.3744    0.0008
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    3.7815    0.0002
+sex_coded                                 12.3293    0.0000
+mr_y_smri__vol__aseg__icv_sum_year_2      -1.2294    0.2191
+                                             LLCI      ULCI
+constant                                  -2.0533    0.9264
+baseline_maternal_asr_int                  0.0099    0.0373
+mr_y_smri__vol__aseg__hc__lh_sum_year_2    0.0004    0.0011
+sex_coded                                  1.3736    1.8933
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2913    0.0848    6.4707   58.0407    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                                0.4166    0.7166    0.5813
+baseline_maternal_asr_int               0.0232    0.0070    3.3128
+sex_coded                               1.5973    0.1326   12.0452
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0000    1.4468
+                                             p      LLCI      ULCI
+constant                                0.5611   -0.9888    1.8220
+baseline_maternal_asr_int               0.0009    0.0095    0.0370
+sex_coded                               0.0000    1.3372    1.8574
+mr_y_smri__vol__aseg__icv_sum_year_2    0.1481   -0.0000    0.0000
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0232    0.0070    3.3128    0.0009    0.0095    0.0370
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0236    0.0070    3.3744    0.0008    0.0099    0.0373
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__hc__lh_sum_year_2   -0.0004    0.0007
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__hc__lh_sum_year_2   -0.0018    0.0009</pre>
+      </div>
+      <div id="tab_13" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__hc__rh_sum_year_2
+Model Summary: 
+          R      R-sq         MSE         F       df1       df2
+     0.3340    0.1116 151772.5448  117.9941    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                  4347.9092   15.9694  272.2654    0.0000
+baseline_maternal_asr_int   -2.0873    1.0707   -1.9495    0.0514
+sex_coded                 -275.8405   18.0357  -15.2942    0.0000
+                               LLCI      ULCI
+constant                  4316.5897 4379.2288
+baseline_maternal_asr_int   -4.1872    0.0125
+sex_coded                 -311.2126 -240.4684
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2974    0.0884    6.4452   60.7405    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -0.5738    0.6619
+baseline_maternal_asr_int                  0.0235    0.0070
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    0.0005    0.0002
+sex_coded                                  1.6370    0.1246
+                                                t         p
+constant                                  -0.8669    0.3861
+baseline_maternal_asr_int                  3.3619    0.0008
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    3.0844    0.0021
+sex_coded                                 13.1346    0.0000
+                                             LLCI      ULCI
+constant                                  -1.8719    0.7243
+baseline_maternal_asr_int                  0.0098    0.0372
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    0.0002    0.0008
+sex_coded                                  1.3926    1.8814
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2895    0.0838    6.4744   85.9644    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                     1.4423    0.1043   13.8282    0.0000
+baseline_maternal_asr_int    0.0225    0.0070    3.2193    0.0013
+sex_coded                    1.5091    0.1178   12.8109    0.0000
+                               LLCI      ULCI
+constant                     1.2377    1.6469
+baseline_maternal_asr_int    0.0088    0.0362
+sex_coded                    1.2781    1.7401
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0225    0.0070    3.2193    0.0013    0.0088    0.0362
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0235    0.0070    3.3619    0.0008    0.0098    0.0372
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__hc__rh_sum_year_2   -0.0010    0.0006
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__hc__rh_sum_year_2   -0.0023   -0.0000</pre>
+      </div>
+      <div id="tab_14" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__hc__rh_sum_year_2
+Model Summary: 
+          R      R-sq         MSE         F       df1       df2
+     0.6435    0.4141 100136.9278  442.5274    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                             1365.1341   96.6502   14.1245
+baseline_maternal_asr_int              -0.9329    0.8705   -1.0718
+sex_coded                             -34.9359   16.5666   -2.1088
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0019    0.0001   31.1433
+                                             p      LLCI      ULCI
+constant                                0.0000 1175.5811 1554.6871
+baseline_maternal_asr_int               0.2840   -2.6401    0.7743
+sex_coded                               0.0351  -67.4269   -2.4450
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0018    0.0020
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2974    0.0885    6.4485   45.5400    4.0000 1877.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -0.4878    0.8158
+baseline_maternal_asr_int                  0.0235    0.0070
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    0.0005    0.0002
+sex_coded                                  1.6286    0.1331
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+                                                t         p
+constant                                  -0.5980    0.5499
+baseline_maternal_asr_int                  3.3567    0.0008
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    2.6093    0.0091
+sex_coded                                 12.2357    0.0000
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.1804    0.8569
+                                             LLCI      ULCI
+constant                                  -2.0877    1.1121
+baseline_maternal_asr_int                  0.0098    0.0372
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    0.0001    0.0008
+sex_coded                                  1.3675    1.8896
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2918    0.0852    6.4685   58.2703    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                                0.1718    0.7768    0.2212
+baseline_maternal_asr_int               0.0230    0.0070    3.2881
+sex_coded                               1.6117    0.1331   12.1045
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0000    1.6505
+                                             p      LLCI      ULCI
+constant                                0.8250   -1.3517    1.6953
+baseline_maternal_asr_int               0.0010    0.0093    0.0367
+sex_coded                               0.0000    1.3506    1.8728
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0990   -0.0000    0.0000
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0230    0.0070    3.2881    0.0010    0.0093    0.0367
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0235    0.0070    3.3567    0.0008    0.0098    0.0372
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__hc__rh_sum_year_2   -0.0005    0.0005
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__hc__rh_sum_year_2   -0.0016    0.0004</pre>
+      </div>
+      <div id="tab_15" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__hc__rh_sum_year_2
+Model Summary: 
+          R      R-sq         MSE         F       df1       df2
+     0.3488    0.1217 161716.3855  130.1458    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                  4371.7904   16.4842  265.2107    0.0000
+baseline_maternal_asr_int   -3.2159    1.1052   -2.9098    0.0037
+sex_coded                 -297.0746   18.6171  -15.9570    0.0000
+                               LLCI      ULCI
+constant                  4339.4611 4404.1197
+baseline_maternal_asr_int   -5.3835   -1.0484
+sex_coded                 -333.5870 -260.5621
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2983    0.0890    6.4413   61.1568    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -0.6357    0.6450
+baseline_maternal_asr_int                  0.0240    0.0070
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    0.0005    0.0001
+sex_coded                                  1.6503    0.1252
+                                                t         p
+constant                                  -0.9856    0.3245
+baseline_maternal_asr_int                  3.4389    0.0006
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    3.2646    0.0011
+sex_coded                                 13.1809    0.0000
+                                             LLCI      ULCI
+constant                                  -1.9006    0.6292
+baseline_maternal_asr_int                  0.0103    0.0378
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    0.0002    0.0008
+sex_coded                                  1.4047    1.8959
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2895    0.0838    6.4744   85.9644    2.0000 1879.0000
+          p
+     0.0000
+Model: 
+                              coeff        se         t         p
+constant                     1.4423    0.1043   13.8282    0.0000
+baseline_maternal_asr_int    0.0225    0.0070    3.2193    0.0013
+sex_coded                    1.5091    0.1178   12.8109    0.0000
+                               LLCI      ULCI
+constant                     1.2377    1.6469
+baseline_maternal_asr_int    0.0088    0.0362
+sex_coded                    1.2781    1.7401
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0225    0.0070    3.2193    0.0013    0.0088    0.0362
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0240    0.0070    3.4389    0.0006    0.0103    0.0378
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__hc__rh_sum_year_2   -0.0015    0.0007
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__hc__rh_sum_year_2   -0.0031   -0.0004</pre>
+      </div>
+      <div id="tab_16" class="tab-panel ">
+        <pre class="code">Outcome Variable: mr_y_smri__vol__aseg__hc__rh_sum_year_2
+Model Summary: 
+          R      R-sq         MSE         F       df1       df2
+     0.6598    0.4353 104024.1505  482.5839    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                             1468.5216   90.8596   16.1625
+baseline_maternal_asr_int              -1.2258    0.8885   -1.3796
+sex_coded                             -47.4193   16.8137   -2.8203
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0018    0.0001   32.2971
+                                             p      LLCI      ULCI
+constant                                0.0000 1290.3252 1646.7181
+baseline_maternal_asr_int               0.1679   -2.9684    0.5168
+sex_coded                               0.0048  -80.3949  -14.4438
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0017    0.0019
+*********************************************************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2986    0.0892    6.4434   45.9502    4.0000 1877.0000
+          p
+     0.0000
+Model: 
+                                            coeff        se
+constant                                  -0.3810    0.7632
+baseline_maternal_asr_int                  0.0239    0.0070
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    0.0005    0.0002
+sex_coded                                  1.6231    0.1326
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+                                                t         p
+constant                                  -0.4992    0.6177
+baseline_maternal_asr_int                  3.4133    0.0007
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    2.9904    0.0028
+sex_coded                                 12.2394    0.0000
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.6245    0.5324
+                                             LLCI      ULCI
+constant                                  -1.8778    1.1159
+baseline_maternal_asr_int                  0.0102    0.0376
+mr_y_smri__vol__aseg__hc__rh_sum_year_2    0.0002    0.0009
+sex_coded                                  1.3630    1.8831
+mr_y_smri__vol__aseg__icv_sum_year_2      -0.0000    0.0000
+************************ TOTAL EFFECT MODEL *************************** 
+Outcome Variable: mh_y_bpm__int_year_4
+Model Summary: 
+          R      R-sq       MSE         F       df1       df2
+     0.2913    0.0848    6.4707   58.0407    3.0000 1878.0000
+          p
+     0.0000
+Model: 
+                                         coeff        se         t
+constant                                0.4166    0.7166    0.5813
+baseline_maternal_asr_int               0.0232    0.0070    3.3128
+sex_coded                               1.5973    0.1326   12.0452
+mr_y_smri__vol__aseg__icv_sum_year_2    0.0000    0.0000    1.4468
+                                             p      LLCI      ULCI
+constant                                0.5611   -0.9888    1.8220
+baseline_maternal_asr_int               0.0009    0.0095    0.0370
+sex_coded                               0.0000    1.3372    1.8574
+mr_y_smri__vol__aseg__icv_sum_year_2    0.1481   -0.0000    0.0000
+*********************************************************************** 
+************ TOTAL, DIRECT, AND INDIRECT EFFECTS OF X ON Y ************
+Total effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0232    0.0070    3.3128    0.0009    0.0095    0.0370
+Direct effect of X on Y:
+     effect        se         t         p      LLCI      ULCI
+     0.0239    0.0070    3.4133    0.0007    0.0102    0.0376
+Indirect effect(s) of X on Y:
+                                           Effect    BootSE
+mr_y_smri__vol__aseg__hc__rh_sum_year_2   -0.0007    0.0006
+                                         BootLLCI  BootULCI
+mr_y_smri__vol__aseg__hc__rh_sum_year_2   -0.0020    0.0003</pre>
+      </div>
+    </div>
+  </body>
+</html>
+</html>
